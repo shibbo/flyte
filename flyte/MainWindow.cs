@@ -24,12 +24,6 @@ namespace flyte
         public MainWindow()
         {
             InitializeComponent();
-
-            MemoryStream memStream = new Yaz0(File.Open("SpinGuidance.arc", FileMode.Open));
-            EndianBinaryReader reader = new EndianBinaryReader(memStream);
-            reader.SetEndianess(EndianBinaryReader.Endianess.Big);
-
-            RARC rarc = new RARC(ref reader);
         }
 
         private void QuitToolStripMenuItem_Click(object sender, EventArgs e)
