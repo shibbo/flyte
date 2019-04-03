@@ -11,12 +11,23 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using flyte.archive;
+using flyte.archive._3ds;
+using flyte.archive.common;
+using flyte.archive.wii;
 using flyte.io;
-using flyte.io._3ds;
-using flyte.io.common;
-using flyte.io.wii;
+using flyte.lyt;
+using flyte.lyt.wii;
+using flyte.ui;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+using flyte.img.wii;
+
 namespace flyte
 {
     public partial class MainWindow : Form
@@ -38,8 +49,6 @@ namespace flyte
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                listBox1.Items.Clear();
-
                 // now we need to decide what they just opened
                 EndianBinaryReader reader = new EndianBinaryReader(File.Open(dialog.FileName, FileMode.Open));
 
@@ -88,17 +97,76 @@ namespace flyte
                         break;
                 }
 
-                if (mArchive != null)
+                if (mArchive == null)
                 {
-                    string txt = String.Format("Opened file {0} -- Format: {1}", dialog.FileName, magic);
-                    statusLabel.Text = txt;
+                    MessageBox.Show("Format not supported.");
+                    return;
+                }
 
-                    foreach (string str in mArchive.getFileNames())
-                        listBox1.Items.Add(str);
+                mLayoutFiles = mArchive.getLayoutFiles();
+                mLayoutAnimFiles = mArchive.getLayoutAnimations();
+                mLayoutImages = mArchive.getLayoutImages();
+                mLayoutControls = mArchive.getLayoutControls();
+
+                string txt = String.Format("Opened file {0} -- Format: {1} -- Layouts: {2} -- Animations: {3} -- Images: {4} -- Controls: {5}", 
+                    Path.GetFileName(dialog.FileName), magic, mLayoutFiles.Count, mLayoutAnimFiles.Count, mLayoutImages.Count, mLayoutControls.Count);
+                statusLabel.Text = txt;
+
+                LayoutChooser layoutChooser = new LayoutChooser();
+                layoutChooser.insertEntries(new List<string>(mLayoutFiles.Keys));
+                layoutChooser.ShowDialog();
+
+                string selectedFile = layoutChooser.getSelectedFile();
+
+                if (selectedFile == null)
+                    return;
+
+                string layoutType = Path.GetExtension(selectedFile);
+
+                EndianBinaryReader layoutReader;
+
+                switch (layoutType)
+                {
+                    case ".brlyt":
+                        byte[] data = mLayoutFiles[selectedFile];
+                        layoutReader = new EndianBinaryReader(data);
+                        mMainLayout = new BRLYT(ref layoutReader);
+                        break;
+                    default:
+                        MessageBox.Show("soz, i dont support that yet");
+                        break;
                 }
             }
         }
 
+        private void ViewControl_Paint(object sender, PaintEventArgs e)
+        {
+            viewControl.MakeCurrent();
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex2(-0.5f, -0.5f);
+            GL.Vertex2(0.5f, -0.5f);
+            GL.Vertex2(0.5f, 0.5f);
+            GL.Vertex2(-0.5f, 0.5f);
+            GL.End();
+
+            viewControl.SwapBuffers();
+        }
+
+        private void ViewControl_Load(object sender, EventArgs e)
+        {
+            GL.Enable(EnableCap.DepthTest);
+        }
+
         ArchiveBase mArchive;
+
+        Dictionary<string, byte[]> mLayoutFiles;
+        Dictionary<string, byte[]> mLayoutAnimFiles;
+        Dictionary<string, byte[]> mLayoutImages;
+        Dictionary<string, byte[]> mLayoutControls;
+
+        LayoutBase mMainLayout;
     }
 }

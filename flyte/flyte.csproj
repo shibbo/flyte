@@ -33,8 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,22 +53,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="io\ArchiveBase.cs" />
+    <Compile Include="archive\ArchiveBase.cs" />
+    <Compile Include="img\wii\TPL.cs" />
+    <Compile Include="lyt\LayoutBase.cs" />
+    <Compile Include="lyt\wii\BRLYT.cs" />
+    <Compile Include="lyt\wii\FNL1.cs" />
+    <Compile Include="lyt\wii\MAT1.cs" />
+    <Compile Include="lyt\wii\PAN1.cs" />
+    <Compile Include="lyt\wii\PIC1.cs" />
+    <Compile Include="lyt\wii\TXL1.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="io\3ds\DARC.cs" />
-    <Compile Include="io\3ds\NARC.cs" />
-    <Compile Include="io\common\SARC.cs" />
+    <Compile Include="archive\3ds\DARC.cs" />
+    <Compile Include="archive\3ds\NARC.cs" />
+    <Compile Include="archive\common\SARC.cs" />
     <Compile Include="io\EndianBinaryReader.cs" />
-    <Compile Include="io\wii\RARC.cs" />
-    <Compile Include="io\wii\U8.cs" />
-    <Compile Include="io\Yaz0.cs" />
+    <Compile Include="archive\wii\RARC.cs" />
+    <Compile Include="archive\wii\U8.cs" />
+    <Compile Include="archive\Yaz0.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ui\LayoutChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\LayoutChooser.Designer.cs">
+      <DependentUpon>LayoutChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="utils\Color.cs" />
+    <Compile Include="utils\Coord.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -74,6 +97,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ui\LayoutChooser.resx">
+      <DependentUpon>LayoutChooser.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -87,5 +115,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

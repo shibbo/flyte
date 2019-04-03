@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using flyte.utils;
 
 namespace flyte.io
 {
@@ -146,6 +147,17 @@ namespace flyte.io
             return ret;
         }
 
+        public float ReadF32()
+        {
+            byte[] src = ReadBytes(4);
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(src);
+
+            float ret = BitConverter.ToSingle(src, 0);
+            return ret;
+        }
+
         /// <summary>
         /// Reads a length-defined string.
         /// </summary>
@@ -257,6 +269,49 @@ namespace flyte.io
             Seek(where);
             byte[] ret = ReadBytes(num);
             Seek(curPos);
+            return ret;
+        }
+
+        public RGBAColor8 ReadRGBAColor8()
+        {
+            RGBAColor8 ret = new RGBAColor8
+            {
+                r = ReadByte(),
+                g = ReadByte(),
+                b = ReadByte(),
+                a = ReadByte()
+            };
+
+            return ret;
+        }
+
+        public RGBAColor16 ReadRGBAColor16()
+        {
+            RGBAColor16 ret = new RGBAColor16
+            {
+                r = ReadInt16(),
+                g = ReadInt16(),
+                b = ReadInt16(),
+                a = ReadInt16()
+            };
+
+            return ret;
+        }
+
+        public UVCoordSet ReadUVCoordSet()
+        {
+            UVCoordSet ret = new UVCoordSet
+            {
+                topLeftU = ReadF32(),
+                topLeftV = ReadF32(),
+                topRightU = ReadF32(),
+                topRightV = ReadF32(),
+                bottomLeftU = ReadF32(),
+                bottomLeftV = ReadF32(),
+                bottomRightU = ReadF32(),
+                bottomRightV = ReadF32()
+            };
+
             return ret;
         }
 
