@@ -36,7 +36,7 @@ namespace flyte.archive.wii
 
             mFileLength = reader.ReadUInt32();
             mHeaderLength = reader.ReadUInt32();
-            mFileDataOffset = reader.ReadUInt32();
+            mFileDataOffset = reader.ReadUInt32() + 0x20;
             mFileDataLength = reader.ReadUInt32();
             mUnk14 = reader.ReadUInt32();
             mUnk18 = reader.ReadUInt32();
@@ -79,8 +79,21 @@ namespace flyte.archive.wii
                     string name = reader.ReadStringNTFrom(dir.getStringOffset() + strTableOffs);
                     dir.setName(name);
 
-                    byte[] data = reader.ReadBytesFrom(dir.getDataOffset(), (int)dir.getDataLength());
+                    byte[] data = reader.ReadBytesFrom(dir.getDataOffset() + mFileDataOffset, (int)dir.getDataLength());
                     dir.setData(data);
+                }
+            }
+
+            uint curIdx = 0;
+            // now that we have both finished, we can assign directory names to file nodes
+            foreach(RARCNode node in mNodes)
+            {
+                curIdx = node.mFirstDirIndex;
+
+                while (curIdx < node.mNumDirectories + node.mFirstDirIndex)
+                {
+                    setName((int)curIdx, node.getName());
+                    curIdx++;
                 }
             }
         }
@@ -104,6 +117,23 @@ namespace flyte.archive.wii
             return null;
         }
 
+        /// <summary>
+        /// Set a node's name, with a directory name prepended.
+        /// </summary>
+        /// <param name="idx">The file index.</param>
+        /// <param name="name">The directory name.</param>
+        public void setName(int idx, string name)
+        {
+            RARCDirectory curDir = mDirectories[idx];
+
+            // directories dont get this special treatment
+            if (curDir.getType() != 0x1100)
+                return;
+
+            curDir.setName(name + "/" + curDir.getName());
+            mDirectories[idx] = curDir;
+        }
+
         public override List<string> getFileNames()
         {
             List<string> names = new List<string>();
@@ -115,6 +145,70 @@ namespace flyte.archive.wii
             }
 
             return names;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutFiles()
+        {
+            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+
+            foreach (RARCDirectory dir in mDirectories)
+            {
+                if (dir.getType() != 0x1100)
+                    continue;
+
+                if (dir.getName().Contains(".brlyt"))
+                    dict.Add(dir.getName(), dir.getData());
+            }
+
+            return dict;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutAnimations()
+        {
+            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+
+            foreach (RARCDirectory dir in mDirectories)
+            {
+                if (dir.getType() != 0x1100)
+                    continue;
+
+                if (dir.getName().Contains(".brlan"))
+                    dict.Add(dir.getName(), dir.getData());
+            }
+
+            return dict;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutImages()
+        {
+            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+
+            foreach (RARCDirectory dir in mDirectories)
+            {
+                if (dir.getType() != 0x1100)
+                    continue;
+
+                if (dir.getName().Contains(".tpl"))
+                    dict.Add(dir.getName(), dir.getData());
+            }
+
+            return dict;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutControls()
+        {
+            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+
+            foreach (RARCDirectory dir in mDirectories)
+            {
+                if (dir.getType() != 0x1100)
+                    continue;
+
+                if (dir.getName().Contains(".brctr"))
+                    dict.Add(dir.getName(), dir.getData());
+            }
+
+            return dict;
         }
 
         uint mFileLength;
@@ -174,14 +268,15 @@ namespace flyte.archive.wii
             mFirstDirIndex = reader.ReadUInt32();
         }
 
+        public string getName() { return mName; }
         public uint getNameOffset() { return mNameOffset; }
         public void setName(string name) { mName = name; }
 
         string mIdentifier;
         uint mNameOffset;
         ushort mHash;
-        ushort mNumDirectories;
-        uint mFirstDirIndex;
+        public ushort mNumDirectories;
+        public uint mFirstDirIndex;
 
         string mName;
     }
@@ -205,6 +300,7 @@ namespace flyte.archive.wii
         public string getName() { return mName; }
         public ushort getStringOffset() { return mStrTableOffset; }
         public ushort getType() { return mType; }
+        public bool isDirectory() { return mType != 0x1100; }
         public void setData(byte[] data) { mData = data; }
         public void setName(string name) { mName = name; }
 

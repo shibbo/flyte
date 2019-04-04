@@ -232,5 +232,17 @@ namespace flyte
         Dictionary<string, byte[]> mLayoutControls;
 
         LayoutBase mMainLayout;
+
+        private void LoadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutChooser layoutChooser = new LayoutChooser();
+            layoutChooser.insertEntries(new List<string>(mLayoutAnimFiles.Keys));
+            layoutChooser.ShowDialog();
+        }
+
+        private void ControlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
