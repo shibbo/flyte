@@ -26,10 +26,17 @@ namespace flyte.lyt.wii
             mNumSections = reader.ReadUInt16();
 
             mLayoutParams = new LYT1(ref reader);
-            mSections = new List<LayoutBase>();
+            mGroups = new List<GRP1>();
 
+            // for panels
             LayoutBase prev = null;
             LayoutBase parent = null;
+
+            bool isRootPaneSet = false;
+
+            // for groups
+            LayoutBase previousGroup = null;
+            LayoutBase groupParent = null;
             
             for (int i = 0; i < mNumSections; i++)
             {
@@ -48,7 +55,14 @@ namespace flyte.lyt.wii
                         break;
                     case "pan1":
                         PAN1 panel = new PAN1(ref reader);
-                        mSections.Add(panel);
+                        
+                        // root panel *should* be the first thing in the list of elements
+                        // so if it isn't, then the layout is wrong
+                        if (!isRootPaneSet)
+                        {
+                            mRootPanel = panel;
+                            isRootPaneSet = true;
+                        }
 
                         if (parent != null)
                         {
@@ -59,9 +73,7 @@ namespace flyte.lyt.wii
                         prev = panel;
                         break;
                     case "pic1":
-                        // pictures have to have a panel parent
                         PIC1 pic = new PIC1(ref reader);
-                        mSections.Add(pic);
 
                         if (parent != null)
                         {
@@ -72,6 +84,53 @@ namespace flyte.lyt.wii
                         prev = pic;
 
                         break;
+                    case "bnd1":
+                        BND1 bnd = new BND1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(bnd);
+                            bnd.setParent(parent);
+                        }
+
+                        prev = bnd;
+
+                        break;
+                    case "txt1":
+                        TXT1 txt = new TXT1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(txt);
+                            txt.setParent(parent);
+                        }
+
+                        prev = txt;
+
+                        break;
+                    case "usd1":
+                        USD1 usd = new USD1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(usd);
+                            usd.setParent(parent);
+                        }
+
+                        prev = usd;
+
+                        break;
+                    case "wnd1":
+                        WND1 window = new WND1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(window);
+                            window.setParent(parent);
+                        }
+
+                        prev = window;
+                        break;
                     case "pas1":
                         if (prev != null)
                             parent = prev;
@@ -81,6 +140,30 @@ namespace flyte.lyt.wii
                     case "pae1":
                         prev = parent;
                         parent = prev.getParent();
+
+                        reader.ReadUInt32();
+                        break;
+                    case "grp1":
+                        GRP1 group = new GRP1(ref reader);
+                        mGroups.Add(group);
+
+                        if (groupParent != null)
+                        {
+                            groupParent.addChild(group);
+                            group.setParent(groupParent);
+                        }
+
+                        previousGroup = group;
+                        break;
+                    case "grs1":
+                        if (previousGroup != null)
+                             groupParent = previousGroup;
+
+                        reader.ReadUInt32();
+                        break;
+                    case "gre1":
+                        previousGroup = groupParent;
+                        groupParent = previousGroup.getParent();
 
                         reader.ReadUInt32();
                         break;
@@ -99,7 +182,7 @@ namespace flyte.lyt.wii
         FNL1 mFontList;
         MAT1 mMaterialList;
 
-        List<LayoutBase> mSections;
+        List<GRP1> mGroups;
     }
 
     class LYT1

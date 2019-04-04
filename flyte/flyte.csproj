@@ -56,12 +56,17 @@
     <Compile Include="archive\ArchiveBase.cs" />
     <Compile Include="img\wii\TPL.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
+    <Compile Include="lyt\wii\BND1.cs" />
     <Compile Include="lyt\wii\BRLYT.cs" />
     <Compile Include="lyt\wii\FNL1.cs" />
+    <Compile Include="lyt\wii\GRP1.cs" />
     <Compile Include="lyt\wii\MAT1.cs" />
     <Compile Include="lyt\wii\PAN1.cs" />
     <Compile Include="lyt\wii\PIC1.cs" />
     <Compile Include="lyt\wii\TXL1.cs" />
+    <Compile Include="lyt\wii\TXT1.cs" />
+    <Compile Include="lyt\wii\USD1.cs" />
+    <Compile Include="lyt\wii\WND1.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -20,10 +20,11 @@ namespace flyte.lyt.wii
 
         public PAN1(ref EndianBinaryReader reader) : base()
         {
-            long startPos = reader.Pos() - 4;
+            base.setType("Panel");
 
             mSectionSize = reader.ReadUInt32();
             mFlags = reader.ReadByte();
+            // extract our flags
             mIsVisible = Convert.ToBoolean(mFlags & 0x1);
             mInfluencedAlpha = Convert.ToBoolean(mFlags & 0x2);
             mIsWideScreen = Convert.ToBoolean(mFlags & 0x4);
@@ -48,11 +49,10 @@ namespace flyte.lyt.wii
             mHeight = reader.ReadF32();
         }
 
-        uint mSectionSize;
+        public uint mSectionSize;
         byte mFlags;
         byte mOrigin;
         byte mAlpha;
-        string mName;
         string mUserInfo;
         float mTransX;
         float mTransY;

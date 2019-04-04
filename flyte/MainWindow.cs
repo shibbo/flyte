@@ -49,93 +49,8 @@ namespace flyte
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                // now we need to decide what they just opened
-                EndianBinaryReader reader = new EndianBinaryReader(File.Open(dialog.FileName, FileMode.Open));
-
-                string magic = "";
-
-                // we have a Yaz0 compressed file
-                if (reader.ReadString(4) == "Yaz0")
-                {
-                    // we have to close our reader so we can properly read this file as a Yaz0 stream
-                    reader.Close();
-                    MemoryStream ms = new Yaz0(File.Open(dialog.FileName, FileMode.Open));
-
-                    reader = new EndianBinaryReader(ms);
-                    magic = reader.ReadString(4);
-                    reader.Seek(0);
-                }
-                else
-                {
-                    // it is not yaz0 compressed, so we go back so we can see the magic
-                    reader.Seek(0);
-                    magic = reader.ReadString(4);
-                    reader.Seek(0);
-                }
-
-                switch (magic)
-                {
-                    case "darc":
-                        mArchive = new DARC(ref reader);
-                        break;
-                    case "NARC":
-                        mArchive = new NARC(ref reader);
-                        break;
-                    case "SARC":
-                        mArchive = new SARC(ref reader);
-                        break;
-                    case "RARC":
-                        reader.SetEndianess(EndianBinaryReader.Endianess.Big);
-                        mArchive = new RARC(ref reader);
-                        break;
-                    case "U?8-":
-                        reader.SetEndianess(EndianBinaryReader.Endianess.Big);
-                        mArchive = new U8(ref reader);
-                        break;
-                    default:
-                        MessageBox.Show("Error. Unsupported format with magic: " + magic);
-                        break;
-                }
-
-                if (mArchive == null)
-                {
-                    MessageBox.Show("Format not supported.");
-                    return;
-                }
-
-                mLayoutFiles = mArchive.getLayoutFiles();
-                mLayoutAnimFiles = mArchive.getLayoutAnimations();
-                mLayoutImages = mArchive.getLayoutImages();
-                mLayoutControls = mArchive.getLayoutControls();
-
-                string txt = String.Format("Opened file {0} -- Format: {1} -- Layouts: {2} -- Animations: {3} -- Images: {4} -- Controls: {5}", 
-                    Path.GetFileName(dialog.FileName), magic, mLayoutFiles.Count, mLayoutAnimFiles.Count, mLayoutImages.Count, mLayoutControls.Count);
-                statusLabel.Text = txt;
-
-                LayoutChooser layoutChooser = new LayoutChooser();
-                layoutChooser.insertEntries(new List<string>(mLayoutFiles.Keys));
-                layoutChooser.ShowDialog();
-
-                string selectedFile = layoutChooser.getSelectedFile();
-
-                if (selectedFile == null)
-                    return;
-
-                string layoutType = Path.GetExtension(selectedFile);
-
-                EndianBinaryReader layoutReader;
-
-                switch (layoutType)
-                {
-                    case ".brlyt":
-                        byte[] data = mLayoutFiles[selectedFile];
-                        layoutReader = new EndianBinaryReader(data);
-                        mMainLayout = new BRLYT(ref layoutReader);
-                        break;
-                    default:
-                        MessageBox.Show("soz, i dont support that yet");
-                        break;
-                }
+                Clear();
+                ProcessData(dialog.FileName);
             }
         }
 
@@ -158,6 +73,155 @@ namespace flyte
         private void ViewControl_Load(object sender, EventArgs e)
         {
             GL.Enable(EnableCap.DepthTest);
+        }
+
+        private void CloseFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clear();
+        }
+
+        void ProcessData(string filename)
+        {
+            // now we need to decide what they just opened
+            EndianBinaryReader reader = new EndianBinaryReader(File.Open(filename, FileMode.Open));
+
+            string magic = "";
+
+            // we have a Yaz0 compressed file
+            if (reader.ReadString(4) == "Yaz0")
+            {
+                // we have to close our reader so we can properly read this file as a Yaz0 stream
+                reader.Close();
+                MemoryStream ms = new Yaz0(File.Open(filename, FileMode.Open));
+
+                reader = new EndianBinaryReader(ms);
+                magic = reader.ReadString(4);
+                reader.Seek(0);
+            }
+            else
+            {
+                // it is not yaz0 compressed, so we go back so we can see the magic
+                reader.Seek(0);
+                magic = reader.ReadString(4);
+                reader.Seek(0);
+            }
+
+            switch (magic)
+            {
+                case "darc":
+                    mArchive = new DARC(ref reader);
+                    break;
+                case "NARC":
+                    mArchive = new NARC(ref reader);
+                    break;
+                case "SARC":
+                    mArchive = new SARC(ref reader);
+                    break;
+                case "RARC":
+                    reader.SetEndianess(EndianBinaryReader.Endianess.Big);
+                    mArchive = new RARC(ref reader);
+                    break;
+                case "U?8-":
+                    reader.SetEndianess(EndianBinaryReader.Endianess.Big);
+                    mArchive = new U8(ref reader);
+                    break;
+                default:
+                    MessageBox.Show("Error. Unsupported format with magic: " + magic);
+                    break;
+            }
+
+            reader.Close();
+
+            if (mArchive == null)
+            {
+                MessageBox.Show("Format not supported.");
+                return;
+            }
+
+            mLayoutFiles = mArchive.getLayoutFiles();
+            mLayoutAnimFiles = mArchive.getLayoutAnimations();
+            mLayoutImages = mArchive.getLayoutImages();
+            mLayoutControls = mArchive.getLayoutControls();
+
+            string txt = String.Format("Opened file {0} -- Format: {1} -- Layouts: {2} -- Animations: {3} -- Images: {4} -- Controls: {5}",
+                Path.GetFileName(filename), magic, mLayoutFiles.Count, mLayoutAnimFiles.Count, mLayoutImages.Count, mLayoutControls.Count);
+            statusLabel.Text = txt;
+
+            LayoutChooser layoutChooser = new LayoutChooser();
+            layoutChooser.insertEntries(new List<string>(mLayoutFiles.Keys));
+            layoutChooser.ShowDialog();
+
+            string selectedFile = layoutChooser.getSelectedFile();
+
+            if (selectedFile == null)
+                return;
+
+            string layoutType = Path.GetExtension(selectedFile);
+
+            EndianBinaryReader layoutReader;
+
+            switch (layoutType)
+            {
+                case ".brlyt":
+                    byte[] data = mLayoutFiles[selectedFile];
+                    layoutReader = new EndianBinaryReader(data);
+                    mMainLayout = new BRLYT(ref layoutReader);
+                    layoutReader.Close();
+                    break;
+                default:
+                    MessageBox.Show("soz, i dont support that yet");
+                    break;
+            }
+
+            // for now we can just write BRLYT's stuff here
+            PAN1 pane = (PAN1)mMainLayout.getRootPanel();
+
+            // this should be RootPane
+            TreeNode node = new TreeNode
+            {
+                Tag = pane.mName,
+                Name = pane.mName,
+                Text = pane.mName,
+            };
+
+            panelList.Nodes.Add(node);
+
+            fillNodes(pane.getChildren());
+        }
+
+        void Clear()
+        {
+            mLayoutFiles = null;
+            mLayoutAnimFiles = null;
+            mLayoutImages = null;
+            mLayoutControls = null;
+            mMainLayout = null;
+            mArchive = null;
+
+            panelList.Nodes.Clear();
+        }
+
+        void fillNodes(List<LayoutBase> nodes)
+        {
+            foreach (LayoutBase node in nodes)
+            {
+                TreeNode[] parentNodes = panelList.Nodes.Find(node.getParent().mName, true);
+
+                for (int i = 0; i < parentNodes.Length; i++)
+                {
+                    TreeNode parentNode = parentNodes[i];
+
+                    TreeNode newNode = new TreeNode();
+                    newNode.Tag = node.mName;
+                    newNode.Name = node.mName;
+                    newNode.Text = node.mName + " (" + node.getType() + ")";
+
+                    parentNode.Nodes.Add(newNode);
+                }
+
+                if (node.hasChildren())
+                    fillNodes(node.getChildren());
+            }
         }
 
         ArchiveBase mArchive;
