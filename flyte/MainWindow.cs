@@ -116,6 +116,9 @@ namespace flyte
                     break;
                 case "SARC":
                     mArchive = new SARC(ref reader);
+
+                    if (mArchive.isStringTableObfuscated())
+                        MessageBox.Show("This file has obfuscated file names. The editor attempted to find layout files, but cannot supply names.");
                     break;
                 case "RARC":
                     reader.SetEndianess(EndianBinaryReader.Endianess.Big);
@@ -143,10 +146,6 @@ namespace flyte
             mLayoutImages = mArchive.getLayoutImages();
             mLayoutControls = mArchive.getLayoutControls();
 
-            string txt = String.Format("Opened file {0} -- Format: {1} -- Layouts: {2} -- Animations: {3} -- Images: {4} -- Controls: {5}",
-                Path.GetFileName(filename), magic, mLayoutFiles.Count, mLayoutAnimFiles.Count, mLayoutImages.Count, mLayoutControls.Count);
-            statusLabel.Text = txt;
-
             LayoutChooser layoutChooser = new LayoutChooser();
             layoutChooser.insertEntries(new List<string>(mLayoutFiles.Keys));
             layoutChooser.ShowDialog();
@@ -172,6 +171,9 @@ namespace flyte
                     MessageBox.Show("soz, i dont support that yet");
                     break;
             }
+
+            if (mMainLayout == null)
+                return;
 
             // for now we can just write BRLYT's stuff here
             PAN1 pane = (PAN1)mMainLayout.getRootPanel();

@@ -73,9 +73,64 @@ namespace flyte.archive.common
             }
         }
 
+        public override bool isStringTableObfuscated()
+        {
+            return mFileNameTable.isObfuscated();
+        }
+
         public override List<string> getFileNames()
         {
             return new List<string>(mFileData.Keys);
+        }
+
+        public override Dictionary<string, byte[]> getLayoutFiles()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach(KeyValuePair<string, byte[]> pair in mFileData)
+            {
+                if (mFileNameTable.isObfuscated())
+                {
+                    // this is me being nice
+                    if (pair.Value[0] == 'C' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
+                        files.Add(pair.Key, pair.Value);
+                }
+                else
+                {
+                    if (pair.Key.Contains(".bflyt"))
+                    {
+                        files.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
+
+            return files;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutAnimations()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach (KeyValuePair<string, byte[]> pair in mFileData)
+            {
+                if (pair.Key.Contains(".bflan") || mFileNameTable.isObfuscated())
+                    files.Add(pair.Key, pair.Value);
+            }
+
+            return files;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutImages()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach (KeyValuePair<string, byte[]> pair in mFileData)
+            {
+                if (pair.Key.Contains(".bntx") || mFileNameTable.isObfuscated())
+                    files.Add(pair.Key, pair.Value);
+            }
+
+            return files;
         }
 
         ushort mBOM;

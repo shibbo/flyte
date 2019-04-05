@@ -55,14 +55,61 @@ namespace flyte.archive._3ds
 
             long tablePos = reader.Pos();
 
+            string curDirectory = "";
+
             // now we set the names and their data
             foreach(DARCFileEntry entry in mFileEntries)
             {
-                entry.setName(reader.ReadUTF16StringFrom(entry.getFileNameOffset() + tablePos));
-
                 if (!entry.mIsDirectory)
+                {
+                    entry.setName(curDirectory + "/" + reader.ReadUTF16StringFrom(entry.getFileNameOffset() + tablePos));
                     entry.setData(reader.ReadBytesFrom(entry.getFileDataOffset(), (int)entry.getFileDataLength()));
+                }
+                else
+                {
+                    entry.setName(reader.ReadUTF16StringFrom(entry.getFileNameOffset() + tablePos));
+                    curDirectory = entry.getName();
+                }
             }
+        }
+
+        public override Dictionary<string, byte[]> getLayoutFiles()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach(DARCFileEntry entry in mFileEntries)
+            {
+                if (!entry.mIsDirectory && entry.getName().Contains(".bclyt"))
+                    files.Add(entry.getName(), entry.getData());
+            }
+
+            return files;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutAnimations()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach (DARCFileEntry entry in mFileEntries)
+            {
+                if (!entry.mIsDirectory && entry.getName().Contains(".bclan"))
+                    files.Add(entry.getName(), entry.getData());
+            }
+
+            return files;
+        }
+
+        public override Dictionary<string, byte[]> getLayoutImages()
+        {
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+
+            foreach (DARCFileEntry entry in mFileEntries)
+            {
+                if (!entry.mIsDirectory && entry.getName().Contains(".bclim"))
+                    files.Add(entry.getName(), entry.getData());
+            }
+
+            return files;
         }
 
         /// <summary>

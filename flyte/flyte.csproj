@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="archive\ArchiveBase.cs" />
+    <Compile Include="archive\LZ77.cs" />
     <Compile Include="img\wii\TPL.cs" />
     <Compile Include="lan\wii\BRLAN.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
