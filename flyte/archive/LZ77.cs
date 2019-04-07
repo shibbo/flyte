@@ -5,25 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using flyte.io;
 
-/* DOES NOT WORK */
 namespace flyte.archive
 {
     class LZ77
     {
         public LZ77(ref EndianBinaryReader reader)
         {
-            throw new NotImplementedException();
-
             uint curSize = 0;
             int pos, copylen;
             byte first, second, third, fourth;
 
             uint thing = reader.ReadUInt32();
-
-            Console.WriteLine(thing);
-
             mDecompressedSize = thing >> 8;
-
             mDecompressedData = new byte[mDecompressedSize];
 
             while (curSize < mDecompressedSize && reader.Pos() < reader.BaseStream.Length)
@@ -36,6 +29,7 @@ namespace flyte.archive
                         break;
 
                     byte val = Convert.ToByte(flags & (1 << x));
+
                     if (val > 0)
                     {
                         first = reader.ReadByte();
@@ -64,18 +58,22 @@ namespace flyte.archive
                             copylen = (first >> 4) + 1;
                         }
 
-                        byte[] copyBuff = getBytesFrom((int)curSize - pos, (int)curSize - pos + copylen);
+                        int start = (int)curSize - pos;
+                        int end = (int)curSize - pos + copylen;
+
+                        byte[] copyBuff = getBytesFrom(start, end);
                         int copyBuffLen = copyBuff.Length;
 
                         for (int j = 0; j < copylen; j++)
-                            mDecompressedData[reader.Pos() - 4] = copyBuff[j % copyBuffLen];
-
-                        curSize += (uint)copylen;
+                        {
+                            mDecompressedData[curSize] = copyBuff[j % copyBuffLen];
+                            curSize++;
+                        }
                     }
                     else
                     {
                         byte otherVal = reader.ReadByte();
-                        mDecompressedData[reader.Pos() - 4] = otherVal;
+                        mDecompressedData[curSize] = otherVal;
                         curSize++;
                     }
                 }
