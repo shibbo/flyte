@@ -39,6 +39,8 @@ namespace flyte.archive._3ds
             mHeaderSize = reader.ReadUInt16();
             mNumSections = reader.ReadUInt16();
 
+            long gmifPos = 0;
+
             for (int i = 0; i < mNumSections; i++)
             {
                 string curSection = reader.ReadString(4);
@@ -52,6 +54,7 @@ namespace flyte.archive._3ds
                         mFileTable = new NARCFileTable(ref reader);
                         break;
                     case "GMIF":
+                        gmifPos = reader.Pos() + 4;
                         break;
                     default:
                         Console.WriteLine("Unsupported section, " + curSection);
@@ -66,11 +69,11 @@ namespace flyte.archive._3ds
             // now that we have all of our data, we can finally build our dictionary for filenames and data
             mFileDict = new Dictionary<string, byte[]>();
 
-            int curIdx = 0;
+            int curIdx = 2;
             // go through each GMIF offset and get our data
             foreach(GMIFOffset offset in mAllocationBlock.getOffsets())
             {
-                byte[] data = reader.ReadBytesFrom(offset.mStart, (int)offset.mLength);
+                byte[] data = reader.ReadBytesFrom(offset.mStart + gmifPos, (int)offset.mLength);
                 mFileDict.Add(getStringFromIndex(curIdx), data);
 
                 curIdx++;

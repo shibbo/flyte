@@ -35,6 +35,12 @@ namespace flyte
         public MainWindow()
         {
             InitializeComponent();
+
+            MemoryStream ms = new Yaz0(File.Open("CounterCoin.szs", FileMode.Open));
+            EndianBinaryReader reader = new EndianBinaryReader(ms);
+            NARC narc = new NARC(ref reader);
+
+            File.WriteAllBytes("CounterCoin.bclyt", narc.getDataByString("CounterCoin.bclyt"));
         }
 
         private void QuitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -245,6 +251,11 @@ namespace flyte
         private void ControlToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void ExtractToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // todo
         }
     }
 }
