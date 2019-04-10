@@ -57,13 +57,27 @@
     <Compile Include="archive\LH.cs" />
     <Compile Include="archive\LZ77.cs" />
     <Compile Include="img\wii\TPL.cs" />
+    <Compile Include="io\EndianBinaryWriter.cs" />
     <Compile Include="lan\wii\BRLAN.cs" />
+    <Compile Include="lyt\3ds\BCLYT.cs" />
+    <Compile Include="lyt\3ds\FNT1.cs" />
+    <Compile Include="lyt\3ds\TXL1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />
     <Compile Include="lyt\wii\BRLYT.cs" />
     <Compile Include="lyt\wii\FNL1.cs" />
     <Compile Include="lyt\wii\GRP1.cs" />
     <Compile Include="lyt\wii\MAT1.cs" />
+    <Compile Include="lyt\wii\material\AlphaCompare.cs" />
+    <Compile Include="lyt\wii\material\BlendMode.cs" />
+    <Compile Include="lyt\wii\material\ChanCtrl.cs" />
+    <Compile Include="lyt\wii\material\IndTexSRT.cs" />
+    <Compile Include="lyt\wii\material\IndTexStage.cs" />
+    <Compile Include="lyt\wii\material\TevStage.cs" />
+    <Compile Include="lyt\wii\material\TevSwapTable.cs" />
+    <Compile Include="lyt\wii\material\TexCoordGen.cs" />
+    <Compile Include="lyt\wii\material\TexMap.cs" />
+    <Compile Include="lyt\wii\material\TexSRT.cs" />
     <Compile Include="lyt\wii\PAN1.cs" />
     <Compile Include="lyt\wii\PIC1.cs" />
     <Compile Include="lyt\wii\TXL1.cs" />
@@ -91,8 +105,10 @@
     <Compile Include="ui\LayoutChooser.Designer.cs">
       <DependentUpon>LayoutChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="utils\Bit.cs" />
     <Compile Include="utils\Color.cs" />
     <Compile Include="utils\Coord.cs" />
+    <Compile Include="utils\Endian.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

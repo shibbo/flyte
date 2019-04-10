@@ -69,7 +69,7 @@ namespace flyte.archive._3ds
             // now that we have all of our data, we can finally build our dictionary for filenames and data
             mFileDict = new Dictionary<string, byte[]>();
 
-            int curIdx = 2;
+            int curIdx = getNumDirectories();
             // go through each GMIF offset and get our data
             foreach(GMIFOffset offset in mAllocationBlock.getOffsets())
             {
@@ -81,6 +81,18 @@ namespace flyte.archive._3ds
         }
 
         public NARCFileAllocationBlock getAllocationBlock() { return mAllocationBlock; }
+
+        public int getNumDirectories()
+        {
+            int num = 0;
+            foreach(NARCFileTableEntry entry in mFileTable.mFileEntries)
+            {
+                if (entry.mIsDirectory == true)
+                    num++;
+            }
+
+            return num;
+        }
 
         /// <summary>
         /// Get an index in the dictionary from a name.
@@ -131,6 +143,19 @@ namespace flyte.archive._3ds
         public override List<string> getFileNames()
         {
             return new List<string>(mFileDict.Keys);
+        }
+
+        public override Dictionary<string, byte[]> getLayoutFiles()
+        {
+            Dictionary<string, byte[]> ret = new Dictionary<string, byte[]>();
+
+            foreach(KeyValuePair<string, byte[]> pair in mFileDict)
+            {
+                if (pair.Key.Contains(".bclyt"))
+                    ret.Add(pair.Key, pair.Value);
+            }
+
+            return ret;
         }
 
         ushort mBOM;

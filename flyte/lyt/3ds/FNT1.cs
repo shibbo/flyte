@@ -10,38 +10,46 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
-using System.Collections.Generic;
 using flyte.io;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt._3ds
 {
-    class GRP1 : LayoutBase
+    class FNL1
     {
-        public GRP1(ref EndianBinaryReader reader)
+        public FNL1(ref EndianBinaryReader reader)
         {
             long startPos = reader.Pos() - 4;
 
             mSectionSize = reader.ReadUInt32();
-            mGroupName = reader.ReadString(0x10).Replace("\0", "");
-            mNumPanes = reader.ReadUInt16();
-            reader.ReadUInt16(); // padding
+            mNumFonts = reader.ReadUInt16();
+            mUnk0A = reader.ReadUInt16();
 
-            // root group never has any entries
-            if (mNumPanes != 0)
+            // all offsets are relative to this point
+            long curPos = reader.Pos();
+
+            mStrings = new List<string>();
+
+            for (ushort i = 0; i < mNumFonts; i++)
             {
-                mEntries = new List<string>();
-
-                for (ushort i = 0; i < mNumPanes; i++)
-                    mEntries.Add(reader.ReadString(0x10).Replace("\0", ""));
+                uint offset = reader.ReadUInt32();
+                mStrings.Add(reader.ReadStringNTFrom(offset + curPos));
+                reader.ReadUInt32();
             }
 
             reader.Seek(startPos + mSectionSize);
         }
 
-        uint mSectionSize;
-        string mGroupName;
-        ushort mNumPanes;
+        public List<string> getStrings() { return mStrings; }
 
-        List<string> mEntries;
+        uint mSectionSize;
+        ushort mNumFonts;
+        ushort mUnk0A;
+
+        List<string> mStrings;
     }
 }

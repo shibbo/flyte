@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using flyte.utils;
+using static flyte.utils.Endian;
 
 namespace flyte.io
 {
@@ -40,14 +41,6 @@ namespace flyte.io
         /// <param name="input">The input bytes to create a reader with.</param>
         public EndianBinaryReader(byte[] input) : base(new MemoryStream(input)) { }
 
-        /// <summary>
-        /// Enumerator defining the possible endianess of the reader.
-        /// </summary>
-        public enum Endianess
-        {
-            Little = 0,
-            Big = 1
-        }
         /// <summary>
         /// The the endianess of the binary reader.
         /// </summary>
@@ -131,6 +124,15 @@ namespace flyte.io
             else
                 return (UInt32)val;
 
+        }
+
+        public byte ReadByteFrom(long where)
+        {
+            long curPos = Pos();
+            Seek(where);
+            byte ret = ReadByte();
+            Seek(curPos);
+            return ret;
         }
 
         /// <summary>

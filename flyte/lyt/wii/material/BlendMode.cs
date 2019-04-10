@@ -10,21 +10,23 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
-namespace flyte.utils
-{
-    public struct RGBAColor8
-    {
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
-    }
+using flyte.io;
 
-    public struct RGBAColor16
+namespace flyte.lyt.wii.material
+{
+    class BlendMode
     {
-        public short r;
-        public short g;
-        public short b;
-        public short a;
+        public BlendMode(ref EndianBinaryReader reader)
+        {
+            mSource = reader.ReadByte();
+            mSourceFactor = reader.ReadByte();
+            mDestFactor = reader.ReadByte();
+            mOP = reader.ReadByte();
+        }
+
+        byte mSource;
+        byte mSourceFactor;
+        byte mDestFactor;
+        byte mOP;
     }
 }

@@ -12,19 +12,12 @@
 
 namespace flyte.utils
 {
-    public struct RGBAColor8
+    public class Endian
     {
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
-    }
-
-    public struct RGBAColor16
-    {
-        public short r;
-        public short g;
-        public short b;
-        public short a;
+        public enum Endianess
+        {
+            Little =  0,
+            Big = 1
+        }
     }
 }

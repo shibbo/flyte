@@ -12,13 +12,28 @@
 
 using flyte.io;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt.wii.material
 {
-    class BND1 : PAN1
+    class TexCoordGen
     {
-        public BND1(ref EndianBinaryReader reader) : base(ref reader)
+        public TexCoordGen(ref EndianBinaryReader reader)
         {
-            base.setType("Bounding Panel");
+            mGenType = reader.ReadByte();
+            mSource = reader.ReadByte();
+            mMtx = reader.ReadByte();
+            reader.ReadByte();
         }
+
+        public void Write(ref EndianBinaryWriter writer)
+        {
+            writer.Write(mGenType);
+            writer.Write(mSource);
+            writer.Write(mMtx);
+            writer.Write((byte)0);
+        }
+
+        byte mGenType;
+        byte mSource;
+        byte mMtx;
     }
 }

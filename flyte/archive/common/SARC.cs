@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using flyte.io;
+using static flyte.utils.Endian;
 
 namespace flyte.archive.common
 {
@@ -34,7 +35,7 @@ namespace flyte.archive.common
             }
 
             if (reader.ReadUInt16() != 0x14)
-                reader.SetEndianess(EndianBinaryReader.Endianess.Big);
+                reader.SetEndianess(Endianess.Big);
 
             mBOM = reader.ReadUInt16();
             mFileSize = reader.ReadUInt32();

@@ -1,9 +1,20 @@
-﻿using flyte.io;
+﻿/*
+    © 2019 - shibboleet
+    flyte is free software: you can redistribute it and/or modify it under
+    the terms of the GNU General Public License as published by the Free
+    Software Foundation, either version 3 of the License, or (at your option)
+    any later version.
+    flyte is distributed in the hope that it will be useful, but WITHOUT ANY 
+    WARRANTY; See the GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License along 
+    with flyte. If not, see http://www.gnu.org/licenses/.
+*/
+
+using flyte.io;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using static flyte.utils.Endian;
 
 namespace flyte.lyt.wii
 {
@@ -11,7 +22,7 @@ namespace flyte.lyt.wii
     {
         public BRLYT(ref EndianBinaryReader reader) : base()
         {
-            reader.SetEndianess(EndianBinaryReader.Endianess.Big);
+            reader.SetEndianess(Endianess.Big);
 
             if (reader.ReadString(4) != "RLYT")
             {
@@ -98,6 +109,8 @@ namespace flyte.lyt.wii
                         break;
                     case "txt1":
                         TXT1 txt = new TXT1(ref reader);
+                        txt.setMaterialName(mMaterialList.getMaterialNameFromIndex(txt.getMaterialIndex()));
+                        txt.setFontName(mFontList.getFontNameFromIndex(txt.getFontNum()));
 
                         if (parent != null)
                         {
@@ -109,15 +122,11 @@ namespace flyte.lyt.wii
 
                         break;
                     case "usd1":
+                        // user data is assigned to the previous read element
                         USD1 usd = new USD1(ref reader);
 
-                        if (parent != null)
-                        {
-                            parent.addChild(usd);
-                            usd.setParent(parent);
-                        }
-
-                        prev = usd;
+                        if (prev != null)
+                            prev.addUserData(usd);
 
                         break;
                     case "wnd1":
@@ -171,6 +180,45 @@ namespace flyte.lyt.wii
             }
         }
 
+        public override bool containsTextures() { return mTextureList != null; }
+        public override bool containsFonts() { return mFontList != null; }
+        public override bool containsMaterials()
+        {
+            if (mMaterialList != null)
+            {
+                if (mMaterialList.getMaterialNames() != null)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public override List<string> getTextureNames()
+        {
+            if (mTextureList != null)
+                return mTextureList.getStrings();
+            else
+                return null;
+        }
+
+        public override List<string> getFontNames()
+        {
+            if (mFontList != null)
+                return mFontList.getStrings();
+            else
+                return null;
+        }
+
+        public override List<string> getMaterialNames()
+        {
+            if (mMaterialList != null)
+                return mMaterialList.getMaterialNames();
+
+            return null;
+        }
+
+        public override LayoutBase getLayoutParams() { return mLayoutParams; }
+
         ushort mBOM;
         ushort mVersion;
         uint mFileLength;
@@ -185,7 +233,7 @@ namespace flyte.lyt.wii
         List<GRP1> mGroups;
     }
 
-    class LYT1
+    class LYT1 : LayoutBase
     {
         public LYT1(ref EndianBinaryReader reader)
         {
@@ -196,16 +244,37 @@ namespace flyte.lyt.wii
             }
 
             mSectionSize = reader.ReadUInt32();
-            mIsCentered = reader.ReadByte();
+            mIsCentered = Convert.ToBoolean(reader.ReadByte());
             mPadding = reader.ReadBytes(0x3);
             mWidth = reader.ReadF32();
             mHeight = reader.ReadF32();
         }
 
         uint mSectionSize;
-        byte mIsCentered;
+        bool mIsCentered;
         byte[] mPadding; // supposed padding
         float mWidth;
         float mHeight;
+
+        [DisplayName("Is Centered"), CategoryAttribute("General"), DescriptionAttribute("Centers the entire layout if true.")]
+        public bool IsCentered
+        {
+            get { return mIsCentered; }
+            set { mIsCentered = value; }
+        }
+
+        [DisplayName("Width"), CategoryAttribute("General"), DescriptionAttribute("Width of the layout.")]
+        public float Width
+        {
+            get { return mWidth; }
+            set { mWidth = value; }
+        }
+
+        [DisplayName("Height"), CategoryAttribute("General"), DescriptionAttribute("Height of the layout.")]
+        public float Height
+        {
+            get { return mHeight; }
+            set { mHeight = value; }
+        }
     }
 }

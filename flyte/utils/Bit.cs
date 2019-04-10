@@ -12,19 +12,16 @@
 
 namespace flyte.utils
 {
-    public struct RGBAColor8
+    class Bit
     {
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
-    }
+        public static uint ExtractBits(uint val, int numBits, int startBit)
+        {
+            uint mask = 0;
 
-    public struct RGBAColor16
-    {
-        public short r;
-        public short g;
-        public short b;
-        public short a;
+            for (int i = startBit; i < startBit + numBits; i++)
+                 mask |= (0x80000000 >> i);
+
+            return (val & mask) >> (32 - (startBit + numBits));
+        }
     }
 }

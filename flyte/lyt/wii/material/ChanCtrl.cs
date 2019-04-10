@@ -10,21 +10,27 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
-namespace flyte.utils
-{
-    public struct RGBAColor8
-    {
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
-    }
+using flyte.io;
 
-    public struct RGBAColor16
+namespace flyte.lyt.wii.material
+{
+    class ChanCtrl
     {
-        public short r;
-        public short g;
-        public short b;
-        public short a;
+        public ChanCtrl(ref EndianBinaryReader reader)
+        {
+            mColorMatSource = reader.ReadByte();
+            mAlphaMatSource = reader.ReadByte();
+            reader.ReadUInt16();
+        }
+
+        public void Write(ref EndianBinaryWriter writer)
+        {
+            writer.Write(mColorMatSource);
+            writer.Write(mAlphaMatSource);
+            writer.Write((short)0);
+        }
+
+        byte mColorMatSource;
+        byte mAlphaMatSource;
     }
 }

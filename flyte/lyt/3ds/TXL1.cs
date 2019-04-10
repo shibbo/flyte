@@ -10,11 +10,11 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
-using flyte.img.wii;
 using flyte.io;
+using System;
 using System.Collections.Generic;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt._3ds
 {
     class TXL1
     {
@@ -48,16 +48,10 @@ namespace flyte.lyt.wii
             return mStrings.Contains(name);
         }
 
-        public string getTextureNameFromIndex(int idx)
-        {
-            return mStrings[idx];
-        }
-
         uint mSectionSize;
         ushort mNumTextures;
         ushort mUnk0A;
 
         List<string> mStrings;
-        List<TPL> mImages;
     }
 }
