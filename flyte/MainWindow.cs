@@ -26,6 +26,7 @@ using OpenTK.Graphics.OpenGL;
 using flyte.lyt._3ds;
 using static flyte.utils.Endian;
 using System.Text;
+using flyte.img.wii;
 
 namespace flyte
 {
@@ -52,7 +53,7 @@ namespace flyte
             {
                 Clear();
                 ProcessData(dialog.FileName);
-                this.Text = "flyte v0.1 Alpha -- " + Path.GetFileName(dialog.FileName);
+                this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
             }
         }
 
@@ -207,26 +208,49 @@ namespace flyte
             // set our propertygrid with our LYT object
             mainPropertyGrid.SelectedObject = mMainLayout.getLayoutParams();
 
-            // for now we can just write BRLYT's stuff here, since we have the root panel
-            PAN1 pane = (PAN1)mMainLayout.getRootPanel();
-
-            if (pane == null)
+            if (mMainLayout.getRootPanel() == null)
             {
                 MessageBox.Show("Error, the root pane in this layout is not specified.");
                 return;
             }
 
-            // this should be RootPane
-            TreeNode node = new TreeNode
-            {
-                Tag = pane,
-                Name = pane.mName,
-                Text = pane.mName,
-            };
+            LayoutBase pane = null;
 
-            // add our root node, and then start adding its children
-            panelList.Nodes.Add(node);
-            fillNodes(pane.getChildren());
+            // now we have to grab our root panel, which is differnt on each console
+            // so we have to specifically get the one we want
+            switch (layoutType)
+            {
+                case ".brlyt":
+                    pane = (lyt.wii.PAN1)mMainLayout.getRootPanel();
+
+                    // this should be RootPane
+                    TreeNode n1 = new TreeNode
+                    {
+                        Tag = pane,
+                        Name = pane.mName,
+                        Text = pane.mName,
+                    };
+
+                    panelList.Nodes.Add(n1);
+                    fillNodes(pane.getChildren());
+
+                    break;
+                case ".bclyt":
+                    pane = (lyt._3ds.PAN1)mMainLayout.getRootPanel();
+
+                    // this should be RootPane
+                    TreeNode n2 = new TreeNode
+                    {
+                        Tag = pane,
+                        Name = pane.mName,
+                        Text = pane.mName,
+                    };
+
+                    panelList.Nodes.Add(n2);
+                    fillNodes(pane.getChildren());
+
+                    break;
+            }
 
             // now for textures and fonts
             // but it is possible for either one to not exist
@@ -331,6 +355,29 @@ namespace flyte
            {
                 layoutPropertyGrid.SelectedObject = panelList.SelectedNode.Tag;     
            }
+        }
+
+        private void ImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutChooser chooser = new LayoutChooser();
+            chooser.insertEntries(new List<string>(mLayoutImages.Keys));
+            chooser.ShowDialog();
+
+            string selectedImage = chooser.getSelectedFile();
+
+            byte[] data = mLayoutImages[selectedImage];
+
+            EndianBinaryReader reader = new EndianBinaryReader(data);
+            TPL tpl = new TPL(ref reader);
+
+            ImageViewer viewer = new ImageViewer();
+
+            if (tpl.getImage() == null)
+                return;
+
+            viewer.setImage(tpl.getImage());
+            viewer.ShowDialog();
+
         }
     }
 }

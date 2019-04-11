@@ -135,6 +135,15 @@ namespace flyte.io
             return ret;
         }
 
+        public int ReadInt32From(long where)
+        {
+            long curPos = Pos();
+            Seek(where);
+            int ret = ReadInt32();
+            Seek(curPos);
+            return ret;
+        }
+
         /// <summary>
         /// Reads an unsigned 32-bit integer from a given position in the stream.
         /// </summary>
@@ -153,10 +162,24 @@ namespace flyte.io
         {
             byte[] src = ReadBytes(4);
 
-            if (BitConverter.IsLittleEndian)
+            if (mEndianess == Endianess.Big)
                 Array.Reverse(src);
 
             float ret = BitConverter.ToSingle(src, 0);
+            return ret;
+        }
+        public float ReadF32From(long where)
+        {
+            long curPos = Pos();
+            Seek(where);
+            byte[] src = ReadBytes(4);
+            Seek(curPos);
+
+            if (mEndianess == Endianess.Big)
+                Array.Reverse(src);
+
+            float ret = BitConverter.ToSingle(src, 0);
+
             return ret;
         }
 

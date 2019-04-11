@@ -10,7 +10,11 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using flyte.io;
 using static flyte.utils.Endian;
 
@@ -20,6 +24,8 @@ namespace flyte.img.wii
     {
         public TPL(ref EndianBinaryReader reader)
         {
+            throw new NotImplementedException();
+
             reader.SetEndianess(Endianess.Big);
             mIdentifier = reader.ReadUInt32();
             mNumImages = reader.ReadUInt32();
@@ -37,13 +43,28 @@ namespace flyte.img.wii
             }
 
             mImages = new List<TPLImage>();
+            mPalettes = new List<Palette>();
 
             foreach(ImageOffset offset in mImageOffsets)
             {
                 reader.Seek(offset.mImgHeader);
                 TPLImage image = new TPLImage(ref reader);
                 mImages.Add(image);
+
+                // palettes are optional
+                if (offset.mPaletteHeader != 0)
+                {
+                    reader.Seek(offset.mPaletteHeader);
+                    Palette palette = new Palette(ref reader);
+                    mPalettes.Add(palette);
+                }
             }
+        }
+
+        public Bitmap getImage()
+        {
+            // shrug lol
+            return mImages[0].getImage();
         }
 
         uint mIdentifier;
@@ -52,6 +73,7 @@ namespace flyte.img.wii
 
         List<ImageOffset> mImageOffsets;
         List<TPLImage> mImages;
+        List<Palette> mPalettes;
     }
 
     struct ImageOffset
@@ -62,7 +84,11 @@ namespace flyte.img.wii
 
     class TPLImage
     {
-        enum ImageFormat
+        int[] TexelWidths = { 8, 8, 8, 4, 4, 4, 4, -1, 8, 8, 4, -1, -1, -1, 8 };
+        int[] TexelHeights = { 8, 4, 4, 4, 4, 4, 4, -1, 8, 4, 4, -1, -1, -1, 8 };
+        int[] BitsPerPixel = { 4, 8, 8, 16, 16, 16, 32, -1, 8, 16, -1, -1, -1, 4};
+
+        public enum ImageFormat
         {
             I4      = 0x0,
             I8      = 0x1,
@@ -92,6 +118,51 @@ namespace flyte.img.wii
             mMinLOD = reader.ReadByte();
             mMaxLOD = reader.ReadByte();
             mUnpacked = reader.ReadByte();
+
+            int texelHeight = TexelHeights[(int)mFormat];
+            int texelWidth = TexelWidths[(int)mFormat];
+            int bitsPerPixel = BitsPerPixel[(int)mFormat];
+
+            reader.Seek(mImageDataAddr);
+
+            byte[] mOutImg = null;
+            bool unsupported = false;
+
+            switch (mFormat)
+            {
+                case ImageFormat.I4:
+                    mOutImg = ImageDecompressor.DecodeI4(ref reader, mHeight, mWidth);
+                    break;
+                case ImageFormat.I8:
+                    mOutImg = ImageDecompressor.DecodeI8(ref reader, mHeight, mWidth);
+                    break;
+                case ImageFormat.IA4:
+                    mOutImg = ImageDecompressor.DecodeIA4(ref reader, mHeight, mWidth);
+                    break;
+                case ImageFormat.IA8:
+                    mOutImg = ImageDecompressor.DecodeIA8(ref reader, mHeight, mWidth);
+                    break;
+                default:
+                    Console.WriteLine("Format " + mFormat + " not supported...");
+                    unsupported = true;
+                    break;
+            }
+
+            if (unsupported)
+                return;
+        }
+
+        public Bitmap getImage()
+        {
+            if (mOutImg == null)
+                return null;
+
+            var outBMP = new Bitmap(mHeight, mWidth);
+            var img = outBMP.LockBits(new Rectangle(0, 0, outBMP.Width, outBMP.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            Marshal.Copy(mOutImg, 0, img.Scan0, mOutImg.Length);
+            outBMP.UnlockBits(img);
+
+            return outBMP;
         }
 
         ushort mHeight;
@@ -107,5 +178,180 @@ namespace flyte.img.wii
         byte mMinLOD;
         byte mMaxLOD;
         byte mUnpacked;
+
+        byte[] mOutImg;
+    }
+
+    class Palette
+    {
+        enum PaletteImageFormat
+        {
+            IA8 = 0,
+            RGB565 = 1,
+            RGB5A3 = 2
+        }
+
+        public Palette(ref EndianBinaryReader reader)
+        {
+            mEntryCount = reader.ReadUInt16();
+            mUnpacked = Convert.ToBoolean(reader.ReadByte());
+            reader.ReadByte();
+            mPaletteFormat = (PaletteImageFormat)reader.ReadUInt32();
+            mPaletteDataAddres = reader.ReadUInt32();
+        }
+
+        ushort mEntryCount;
+        bool mUnpacked;
+        PaletteImageFormat mPaletteFormat;
+        uint mPaletteDataAddres;
+    }
+
+    class ImageDecompressor
+    {
+        public static byte[] DecodeI4(ref EndianBinaryReader reader, int height, int width)
+        {
+            byte[] buf = new byte[width * height * 4];
+            byte[] data = reader.ReadBytes(width * height * 4);
+
+            int i = 0;
+
+            for (int yTile = 0; yTile < height; yTile += 8)
+            {
+                for (int xTile = 0; xTile < width; xTile += 8)
+                {
+                    for (int yPixel = yTile; yPixel < yTile + 8; yPixel++)
+                    {
+                        for (int xPixel = xTile; xPixel < yTile + 8; xPixel += 2)
+                        {
+                            if (xPixel >= width || yPixel >= height)
+                                continue;
+
+                            byte pix = Convert.ToByte((data[i] >> 4) * 0x11);
+
+                            buf[(((yPixel * width) + xPixel) * 4)] = 0xFF;
+                            buf[(((yPixel * width) + xPixel) * 4) + 1] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 2] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 3] = pix;
+
+                            pix = Convert.ToByte((data[i] & 0xF) * 0x11);
+
+                            buf[(((yPixel * width) + xPixel) * 4) + 4] = 0xFF;
+                            buf[(((yPixel * width) + xPixel) * 4) + 5] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 6] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 7] = pix;
+
+                            i++;
+                        }
+                    }
+                }
+            }
+
+            return buf;
+        }
+
+        public static byte[] DecodeI8(ref EndianBinaryReader reader, int height, int width)
+        {
+            byte[] buf = new byte[width * height * 4];
+            byte[] data = reader.ReadBytes(width * height * 4);
+
+            int i = 0;
+
+            for (int yTile = 0; yTile < height; yTile += 4)
+            {
+                for (int xTile = 0; xTile < width; xTile += 8)
+                {
+                    for (int yPixel = yTile; yPixel < yTile + 4; yPixel++)
+                    {
+                        for (int xPixel = xTile; xPixel < yTile + 8; xPixel++)
+                        {
+                            if (xPixel >= width || yPixel >= height)
+                                continue;
+
+                            byte pix = data[i];
+
+                            buf[(((yPixel * width) + xPixel) * 4) + 0] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 1] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 2] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 3] = 0xFF;
+
+                            i++;
+                        }
+                    }
+                }
+            }
+
+            return buf;
+        }
+
+        public static byte[] DecodeIA4(ref EndianBinaryReader reader, int height, int width)
+        {
+            byte[] buf = new byte[width * height * 4];
+            byte[] data = reader.ReadBytes(buf.Length);
+
+            int i = 0;
+
+            for (int yTile = 0; yTile < height; yTile += 4)
+            {
+                for (int xTile = 0; xTile < width; xTile += 8)
+                {
+                    for (int yPixel = yTile; yPixel < yTile + 4; yPixel++)
+                    {
+                        for (int xPixel = xTile; xPixel < yTile + 8; xPixel++)
+                        {
+                            if (xPixel >= width || yPixel >= height)
+                                continue;
+
+                            byte alpha = Convert.ToByte((data[i] >> 4) * 0x11);
+                            byte pix = Convert.ToByte((data[i] & 0xF) * 0x11);
+
+                            buf[(((yPixel * width) + xPixel) * 4)] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 1] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 2] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 3] = alpha;
+
+                            i++;
+                        }
+                    }
+                }
+            }
+
+            return buf;
+        }
+
+        public static byte[] DecodeIA8(ref EndianBinaryReader reader, int height, int width)
+        {
+            byte[] buf = new byte[width * height * 4];
+            byte[] data = reader.ReadBytes(width * height * 4);
+
+            int i = 0;
+
+            for (int yTile = 0; yTile < height; yTile += 4)
+            {
+                for (int xTile = 0; xTile < width; xTile += 8)
+                {
+                    for (int yPixel = yTile; yPixel < yTile + 4; yPixel++)
+                    {
+                        for (int xPixel = xTile; xPixel < yTile + 8; xPixel++)
+                        {
+                            if (xPixel >= width || yPixel >= height)
+                                continue;
+
+                            byte pix = data[i];
+                            i++;
+
+                            byte alpha = data[i];
+                            i++;
+
+                            buf[(((yPixel * width) + xPixel) * 4)] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 1] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 2] = pix;
+                            buf[(((yPixel * width) + xPixel) * 4) + 3] = alpha;
+                        }
+                    }
+                }
+            }
+
+            return buf;
+        }
     }
 }

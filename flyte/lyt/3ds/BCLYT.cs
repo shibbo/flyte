@@ -38,7 +38,14 @@ namespace flyte.lyt._3ds
             mFileSize = reader.ReadUInt32();
             mSectionCount = reader.ReadUInt32();
 
-            mLYT1 = new LYT1(ref reader);
+            mLayoutParams = new LYT1(ref reader);
+
+            mUserDataEntries = new List<USD1>();
+
+            LayoutBase prev = null;
+            LayoutBase parent = null;
+
+            bool isRootPaneSet = false;
 
             string magic = "";
 
@@ -49,12 +56,125 @@ namespace flyte.lyt._3ds
                 switch (magic)
                 {
                     case "txl1":
+                        mTextureList = new TXL1(ref reader);
                         break;
-                    case "fnt1":
+                    case "fnl1":
+                        mFontList = new FNL1(ref reader);
+                        break;
+                    case "mat1":
+                        mMaterialList = new MAT1(ref reader);
+                        break;
+                    case "pan1":
+                        PAN1 panel = new PAN1(ref reader);
+
+                        if (!isRootPaneSet)
+                        {
+                            mRootPanel = panel;
+                            isRootPaneSet = true;
+                        }
+
+                        if (parent != null)
+                        {
+                            parent.addChild(panel);
+                            panel.setParent(parent);
+                        }
+
+                        prev = panel;
+                        break;
+                    case "pic1":
+                        PIC1 pic = new PIC1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(pic);
+                            pic.setParent(parent);
+                        }
+
+                        prev = pic;
+
+                        break;
+                    case "bnd1":
+                        BND1 bnd = new BND1(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(bnd);
+                            bnd.setParent(parent);
+                        }
+
+                        prev = bnd;
+
+                        break;
+                    case "txt1":
+                        TXT1 txt = new TXT1(ref reader);
+                        if (parent != null)
+                        {
+                            parent.addChild(txt);
+                            txt.setParent(parent);
+                        }
+
+                        prev = txt;
+                        break;
+                    case "usd1":
+                        mUserDataEntries.Add(new USD1(ref reader));
+                        break;
+                    case "pas1":
+                        if (prev != null)
+                            parent = prev;
+
+                        reader.ReadUInt32();
+                        break;
+                    case "pae1":
+                        prev = parent;
+                        parent = prev.getParent();
+
+                        reader.ReadUInt32();
+                        break;
+                    default:
+                        Console.WriteLine("Unsupported magic " + magic);
                         break;
                 }
             }
         }
+
+        public override bool containsTextures() { return mTextureList != null; }
+        public override bool containsFonts() { return mFontList != null; }
+        public override bool containsMaterials()
+        {
+            if (mMaterialList != null)
+            {
+                if (mMaterialList.getMaterialNames() != null)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public override List<string> getTextureNames()
+        {
+            if (mTextureList != null)
+                return mTextureList.getStrings();
+            else
+                return null;
+        }
+
+        public override List<string> getFontNames()
+        {
+            if (mFontList != null)
+                return mFontList.getStrings();
+            else
+                return null;
+        }
+
+        public override List<string> getMaterialNames()
+        {
+            if (mMaterialList != null)
+                return mMaterialList.getMaterialNames();
+
+            return null;
+        }
+
+        public override LayoutBase getLayoutParams() { return mLayoutParams; }
 
         ushort mBOM;
         ushort mHeaderLength;
@@ -62,10 +182,15 @@ namespace flyte.lyt._3ds
         uint mFileSize;
         uint mSectionCount;
 
-        LYT1 mLYT1;
+        LYT1 mLayoutParams;
+        TXL1 mTextureList;
+        FNL1 mFontList;
+        MAT1 mMaterialList;
+
+        List<USD1> mUserDataEntries;
     }
 
-    class LYT1
+    class LYT1 : LayoutBase
     {
         public LYT1(ref EndianBinaryReader reader)
         {

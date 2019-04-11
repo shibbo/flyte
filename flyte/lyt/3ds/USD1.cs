@@ -13,7 +13,7 @@
 using System.Collections.Generic;
 using flyte.io;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt._3ds
 {
     class USD1 : LayoutBase
     {

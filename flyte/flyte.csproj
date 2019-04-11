@@ -60,8 +60,24 @@
     <Compile Include="io\EndianBinaryWriter.cs" />
     <Compile Include="lan\wii\BRLAN.cs" />
     <Compile Include="lyt\3ds\BCLYT.cs" />
-    <Compile Include="lyt\3ds\FNT1.cs" />
+    <Compile Include="lyt\3ds\BND1.cs" />
+    <Compile Include="lyt\3ds\FNL1.cs" />
+    <Compile Include="lyt\3ds\MAT1.cs" />
+    <Compile Include="lyt\3ds\material\AlphaCompare.cs" />
+    <Compile Include="lyt\3ds\material\BlendMode.cs" />
+    <Compile Include="lyt\3ds\material\FontShadowParameter.cs" />
+    <Compile Include="lyt\3ds\material\IndirectParameter.cs" />
+    <Compile Include="lyt\3ds\material\ProjectionTexGenParam.cs" />
+    <Compile Include="lyt\3ds\material\TevStage.cs" />
+    <Compile Include="lyt\3ds\material\TexCoordGen.cs" />
+    <Compile Include="lyt\3ds\material\TexMap.cs" />
+    <Compile Include="lyt\3ds\material\TexSRT.cs" />
+    <Compile Include="lyt\3ds\PAN1.cs" />
+    <Compile Include="lyt\3ds\PIC1.cs" />
     <Compile Include="lyt\3ds\TXL1.cs" />
+    <Compile Include="lyt\3ds\TXT1.cs" />
+    <Compile Include="lyt\3ds\USD1.cs" />
+    <Compile Include="lyt\3ds\WND1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />
     <Compile Include="lyt\wii\BRLYT.cs" />
@@ -99,6 +115,12 @@
     <Compile Include="archive\Yaz0.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ui\ImageViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ImageViewer.Designer.cs">
+      <DependentUpon>ImageViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\LayoutChooser.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +143,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ui\ImageViewer.resx">
+      <DependentUpon>ImageViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\LayoutChooser.resx">
       <DependentUpon>LayoutChooser.cs</DependentUpon>
     </EmbeddedResource>

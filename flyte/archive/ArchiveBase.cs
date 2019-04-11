@@ -42,7 +42,6 @@ namespace flyte.archive
         public virtual List<string> getFileNames() { return mFileNames; }
         public ArchiveType getType() { return mType; }
         public void setFileNames(List<string> names) { mFileNames = names; }
-
         public virtual Dictionary<string, byte[]> getLayoutFiles() { return null; }
         public virtual Dictionary<string, byte[]> getLayoutAnimations() { return null; }
         public virtual Dictionary<string, byte[]> getLayoutImages() { return null; }

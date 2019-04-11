@@ -17,7 +17,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt._3ds
 {
     class TXT1 : PAN1
     {

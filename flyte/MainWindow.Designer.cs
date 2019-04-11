@@ -44,27 +44,28 @@
             this.viewControl = new OpenTK.GLControl();
             this.panelList = new System.Windows.Forms.TreeView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.layoutPage = new System.Windows.Forms.TabPage();
+            this.mainPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.materialsPage = new System.Windows.Forms.TabPage();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.materialList = new System.Windows.Forms.ListBox();
             this.elementsPage = new System.Windows.Forms.TabPage();
+            this.layoutPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.texturesPage = new System.Windows.Forms.TabPage();
             this.texturesList = new System.Windows.Forms.ListBox();
             this.fontsPage = new System.Windows.Forms.TabPage();
             this.fontsList = new System.Windows.Forms.ListBox();
-            this.layoutPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.layoutPage = new System.Windows.Forms.TabPage();
-            this.materialsPage = new System.Windows.Forms.TabPage();
-            this.materialList = new System.Windows.Forms.ListBox();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.mainPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.elementsPage.SuspendLayout();
-            this.texturesPage.SuspendLayout();
-            this.fontsPage.SuspendLayout();
             this.layoutPage.SuspendLayout();
             this.materialsPage.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.elementsPage.SuspendLayout();
+            this.texturesPage.SuspendLayout();
+            this.fontsPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -92,7 +93,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -100,21 +101,21 @@
             // 
             this.extractToolStripMenuItem.Enabled = false;
             this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.extractToolStripMenuItem.Text = "Extract";
             this.extractToolStripMenuItem.Click += new System.EventHandler(this.ExtractToolStripMenuItem_Click);
             // 
             // closeFileToolStripMenuItem
             // 
             this.closeFileToolStripMenuItem.Name = "closeFileToolStripMenuItem";
-            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.closeFileToolStripMenuItem.Text = "Close File";
             this.closeFileToolStripMenuItem.Click += new System.EventHandler(this.CloseFileToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.QuitToolStripMenuItem_Click);
             // 
@@ -130,22 +131,23 @@
             // 
             this.loadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadAnimationToolStripMenuItem,
-            this.controlToolStripMenuItem});
+            this.controlToolStripMenuItem,
+            this.imageToolStripMenuItem});
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadToolStripMenuItem.Text = "Load";
             // 
             // loadAnimationToolStripMenuItem
             // 
             this.loadAnimationToolStripMenuItem.Name = "loadAnimationToolStripMenuItem";
-            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.loadAnimationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadAnimationToolStripMenuItem.Text = "Animation";
             this.loadAnimationToolStripMenuItem.Click += new System.EventHandler(this.LoadAnimationToolStripMenuItem_Click);
             // 
             // controlToolStripMenuItem
             // 
             this.controlToolStripMenuItem.Name = "controlToolStripMenuItem";
-            this.controlToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.controlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.controlToolStripMenuItem.Text = "Control";
             this.controlToolStripMenuItem.Click += new System.EventHandler(this.ControlToolStripMenuItem_Click);
             // 
@@ -205,68 +207,6 @@
             this.tabControl1.Size = new System.Drawing.Size(251, 401);
             this.tabControl1.TabIndex = 5;
             // 
-            // elementsPage
-            // 
-            this.elementsPage.Controls.Add(this.layoutPropertyGrid);
-            this.elementsPage.Controls.Add(this.panelList);
-            this.elementsPage.Location = new System.Drawing.Point(4, 22);
-            this.elementsPage.Name = "elementsPage";
-            this.elementsPage.Padding = new System.Windows.Forms.Padding(3);
-            this.elementsPage.Size = new System.Drawing.Size(243, 375);
-            this.elementsPage.TabIndex = 0;
-            this.elementsPage.Text = "Elements";
-            this.elementsPage.UseVisualStyleBackColor = true;
-            // 
-            // texturesPage
-            // 
-            this.texturesPage.Controls.Add(this.texturesList);
-            this.texturesPage.Location = new System.Drawing.Point(4, 22);
-            this.texturesPage.Name = "texturesPage";
-            this.texturesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.texturesPage.Size = new System.Drawing.Size(221, 375);
-            this.texturesPage.TabIndex = 1;
-            this.texturesPage.Text = "Textures";
-            this.texturesPage.UseVisualStyleBackColor = true;
-            // 
-            // texturesList
-            // 
-            this.texturesList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.texturesList.FormattingEnabled = true;
-            this.texturesList.Location = new System.Drawing.Point(3, 3);
-            this.texturesList.Name = "texturesList";
-            this.texturesList.Size = new System.Drawing.Size(215, 369);
-            this.texturesList.TabIndex = 0;
-            // 
-            // fontsPage
-            // 
-            this.fontsPage.Controls.Add(this.fontsList);
-            this.fontsPage.Location = new System.Drawing.Point(4, 22);
-            this.fontsPage.Name = "fontsPage";
-            this.fontsPage.Size = new System.Drawing.Size(221, 375);
-            this.fontsPage.TabIndex = 2;
-            this.fontsPage.Text = "Fonts";
-            this.fontsPage.UseVisualStyleBackColor = true;
-            // 
-            // fontsList
-            // 
-            this.fontsList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fontsList.FormattingEnabled = true;
-            this.fontsList.Location = new System.Drawing.Point(0, 0);
-            this.fontsList.Name = "fontsList";
-            this.fontsList.Size = new System.Drawing.Size(221, 375);
-            this.fontsList.TabIndex = 0;
-            // 
-            // layoutPropertyGrid
-            // 
-            this.layoutPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.layoutPropertyGrid.Location = new System.Drawing.Point(3, 215);
-            this.layoutPropertyGrid.Name = "layoutPropertyGrid";
-            this.layoutPropertyGrid.Size = new System.Drawing.Size(237, 157);
-            this.layoutPropertyGrid.TabIndex = 5;
-            this.layoutPropertyGrid.ToolbarVisible = false;
-            // 
             // layoutPage
             // 
             this.layoutPage.Controls.Add(this.mainPropertyGrid);
@@ -278,6 +218,15 @@
             this.layoutPage.Text = "Layout";
             this.layoutPage.UseVisualStyleBackColor = true;
             // 
+            // mainPropertyGrid
+            // 
+            this.mainPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainPropertyGrid.Location = new System.Drawing.Point(3, 3);
+            this.mainPropertyGrid.Name = "mainPropertyGrid";
+            this.mainPropertyGrid.Size = new System.Drawing.Size(237, 369);
+            this.mainPropertyGrid.TabIndex = 0;
+            this.mainPropertyGrid.ToolbarVisible = false;
+            // 
             // materialsPage
             // 
             this.materialsPage.Controls.Add(this.toolStrip1);
@@ -288,17 +237,6 @@
             this.materialsPage.TabIndex = 4;
             this.materialsPage.Text = "Materials";
             this.materialsPage.UseVisualStyleBackColor = true;
-            // 
-            // materialList
-            // 
-            this.materialList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.materialList.FormattingEnabled = true;
-            this.materialList.Location = new System.Drawing.Point(3, 28);
-            this.materialList.Name = "materialList";
-            this.materialList.Size = new System.Drawing.Size(240, 342);
-            this.materialList.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -321,14 +259,86 @@
             this.toolStripButton1.Size = new System.Drawing.Size(77, 22);
             this.toolStripButton1.Text = "Edit Material";
             // 
-            // mainPropertyGrid
+            // materialList
             // 
-            this.mainPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPropertyGrid.Location = new System.Drawing.Point(3, 3);
-            this.mainPropertyGrid.Name = "mainPropertyGrid";
-            this.mainPropertyGrid.Size = new System.Drawing.Size(237, 369);
-            this.mainPropertyGrid.TabIndex = 0;
-            this.mainPropertyGrid.ToolbarVisible = false;
+            this.materialList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.materialList.FormattingEnabled = true;
+            this.materialList.Location = new System.Drawing.Point(3, 28);
+            this.materialList.Name = "materialList";
+            this.materialList.Size = new System.Drawing.Size(240, 342);
+            this.materialList.TabIndex = 0;
+            // 
+            // elementsPage
+            // 
+            this.elementsPage.Controls.Add(this.layoutPropertyGrid);
+            this.elementsPage.Controls.Add(this.panelList);
+            this.elementsPage.Location = new System.Drawing.Point(4, 22);
+            this.elementsPage.Name = "elementsPage";
+            this.elementsPage.Padding = new System.Windows.Forms.Padding(3);
+            this.elementsPage.Size = new System.Drawing.Size(243, 375);
+            this.elementsPage.TabIndex = 0;
+            this.elementsPage.Text = "Elements";
+            this.elementsPage.UseVisualStyleBackColor = true;
+            // 
+            // layoutPropertyGrid
+            // 
+            this.layoutPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.layoutPropertyGrid.Location = new System.Drawing.Point(3, 215);
+            this.layoutPropertyGrid.Name = "layoutPropertyGrid";
+            this.layoutPropertyGrid.Size = new System.Drawing.Size(237, 157);
+            this.layoutPropertyGrid.TabIndex = 5;
+            this.layoutPropertyGrid.ToolbarVisible = false;
+            // 
+            // texturesPage
+            // 
+            this.texturesPage.Controls.Add(this.texturesList);
+            this.texturesPage.Location = new System.Drawing.Point(4, 22);
+            this.texturesPage.Name = "texturesPage";
+            this.texturesPage.Padding = new System.Windows.Forms.Padding(3);
+            this.texturesPage.Size = new System.Drawing.Size(243, 375);
+            this.texturesPage.TabIndex = 1;
+            this.texturesPage.Text = "Textures";
+            this.texturesPage.UseVisualStyleBackColor = true;
+            // 
+            // texturesList
+            // 
+            this.texturesList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.texturesList.FormattingEnabled = true;
+            this.texturesList.Location = new System.Drawing.Point(3, 3);
+            this.texturesList.Name = "texturesList";
+            this.texturesList.Size = new System.Drawing.Size(237, 369);
+            this.texturesList.TabIndex = 0;
+            // 
+            // fontsPage
+            // 
+            this.fontsPage.Controls.Add(this.fontsList);
+            this.fontsPage.Location = new System.Drawing.Point(4, 22);
+            this.fontsPage.Name = "fontsPage";
+            this.fontsPage.Size = new System.Drawing.Size(243, 375);
+            this.fontsPage.TabIndex = 2;
+            this.fontsPage.Text = "Fonts";
+            this.fontsPage.UseVisualStyleBackColor = true;
+            // 
+            // fontsList
+            // 
+            this.fontsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fontsList.FormattingEnabled = true;
+            this.fontsList.Location = new System.Drawing.Point(0, 0);
+            this.fontsList.Name = "fontsList";
+            this.fontsList.Size = new System.Drawing.Size(243, 375);
+            this.fontsList.TabIndex = 0;
+            // 
+            // imageToolStripMenuItem
+            // 
+            this.imageToolStripMenuItem.Enabled = false;
+            this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.imageToolStripMenuItem.Text = "Image";
+            this.imageToolStripMenuItem.Click += new System.EventHandler(this.ImageToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -341,21 +351,21 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainWindow";
-            this.Text = "flyte v0.1 Alpha";
+            this.Text = "flyte v0.2 Alpha";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
-            this.elementsPage.ResumeLayout(false);
-            this.texturesPage.ResumeLayout(false);
-            this.fontsPage.ResumeLayout(false);
             this.layoutPage.ResumeLayout(false);
             this.materialsPage.ResumeLayout(false);
             this.materialsPage.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.elementsPage.ResumeLayout(false);
+            this.texturesPage.ResumeLayout(false);
+            this.fontsPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -389,6 +399,7 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ListBox materialList;
+        private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
     }
 }
 

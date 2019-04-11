@@ -12,7 +12,7 @@
 
 using flyte.io;
 
-namespace flyte.lyt.wii.material
+namespace flyte.lyt._3ds.material
 {
     class TexCoordGen
     {
@@ -36,21 +36,17 @@ namespace flyte.lyt.wii.material
         {
             mGenType = (MatrixType)reader.ReadByte();
             mSource = (TextureGenerationType)reader.ReadByte();
-            mMatrixType = reader.ReadByte();
-            reader.ReadByte();
+            reader.ReadUInt16();
         }
 
         public void Write(ref EndianBinaryWriter writer)
         {
             writer.Write((byte)mGenType);
             writer.Write((byte)mSource);
-            writer.Write(mMatrixType);
-            writer.Write((byte)0);
+            writer.Write((ushort)0);
         }
 
         MatrixType mGenType;
         TextureGenerationType mSource;
-        byte mMatrixType;
-
     }
 }
