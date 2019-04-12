@@ -43,7 +43,7 @@ namespace flyte.lyt
         public virtual bool containsTextures() { return false; }
         public virtual bool containsFonts() { return false; }
         public virtual bool containsMaterials() { return false; }
-        public virtual void addUserData(USD1 data) { }
+        public virtual void addUserData(UserdataBase data) { }
         public virtual LayoutBase getLayoutParams() { return null; }
         public virtual List<string> getMaterialNames() { return null; }
 

@@ -40,6 +40,14 @@ namespace flyte.lyt._3ds
             mWidth = reader.ReadF32();
         }
 
+        public override void addUserData(UserdataBase data)
+        {
+            if (mUserDatas == null)
+                mUserDatas = new List<UserdataBase>();
+
+            mUserDatas.Add(data);
+        }
+
         public uint mSectionSize;
         byte mFlags;
         byte mOrigin;
@@ -61,5 +69,7 @@ namespace flyte.lyt._3ds
         bool mLocationAdjust;
         bool mIgnorePartsMagnify;
         bool mAdjustToPartsBounds;
+
+        List<UserdataBase> mUserDatas;
     }
 }

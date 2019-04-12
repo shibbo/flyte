@@ -15,12 +15,10 @@ using flyte.io;
 
 namespace flyte.lyt.wii
 {
-    class USD1 : LayoutBase
+    class USD1 : UserdataBase
     {
         public USD1(ref EndianBinaryReader reader)
         {
-            base.setType("User Data");
-
             long curPos = reader.Pos() - 4;
 
             mSectionSize = reader.ReadUInt32();

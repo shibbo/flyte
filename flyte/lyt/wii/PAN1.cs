@@ -60,10 +60,10 @@ namespace flyte.lyt.wii
             mHeight = reader.ReadF32();
         }
 
-        public override void addUserData(USD1 data)
+        public override void addUserData(UserdataBase data)
         {
             if (mUserDatas == null)
-                mUserDatas = new List<USD1>();
+                mUserDatas = new List<UserdataBase>();
 
             mUserDatas.Add(data);
         }
@@ -91,7 +91,7 @@ namespace flyte.lyt.wii
         OriginType mHorizontalOrigin;
         OriginType mVerticalOrigin;
 
-        List<USD1> mUserDatas;
+        List<UserdataBase> mUserDatas;
 
         #region  PropertyGrid Stuff
         [DisplayName("Name"), CategoryAttribute("General"), DescriptionAttribute("The name of the element.")]

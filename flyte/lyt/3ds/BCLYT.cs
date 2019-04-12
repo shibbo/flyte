@@ -116,7 +116,11 @@ namespace flyte.lyt._3ds
                         prev = txt;
                         break;
                     case "usd1":
-                        mUserDataEntries.Add(new USD1(ref reader));
+                        USD1 usd = new USD1(ref reader);
+
+                        if (prev != null)
+                            prev.addUserData(usd);
+
                         break;
                     case "pas1":
                         if (prev != null)
