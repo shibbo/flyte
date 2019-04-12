@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using flyte.io;
+using System.Linq;
 using static flyte.utils.Endian;
 
 namespace flyte.archive.common
@@ -137,9 +138,11 @@ namespace flyte.archive.common
         {
             List<string> strs = new List<string>();
 
+            string[] exts = { ".lyarc", ".sarc", ".szs" };
+
             foreach (KeyValuePair<string, byte[]> pair in mFileData)
             {
-                if (pair.Key.Contains(".lyarc") || pair.Key.Contains(".sarc"))
+                if (exts.Contains(pair.Key))
                     strs.Add(pair.Key);
             }
 
