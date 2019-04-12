@@ -21,7 +21,7 @@ namespace flyte.lyt.wii
 {
     class TXT1 : PAN1
     {
-        public TXT1(ref EndianBinaryReader reader) : base(ref reader)
+        public TXT1(ref EndianBinaryReader reader, ref MAT1 materials, ref FNL1 fonts) : base(ref reader)
         {
             base.setType("Text Box");
 
@@ -49,6 +49,9 @@ namespace flyte.lyt.wii
                 mString = Encoding.GetEncoding(1201).GetString(str);
             }
 
+            mMaterialName = materials.getMaterialNameFromIndex(mMaterialIdx);
+            mFontName = fonts.getFontNameFromIndex(mFontNum);
+
             reader.Seek(startPos + mSectionSize);
         }
 
@@ -70,12 +73,6 @@ namespace flyte.lyt.wii
 
         string mMaterialName;
         string mFontName;
-
-        public ushort getMaterialIndex() { return mMaterialIdx; }
-        public ushort getFontNum() { return mFontNum; }
-
-        public void setMaterialName(string name) { mMaterialName = name; }
-        public void setFontName(string name) { mFontName = name; }
 
         [DisplayName("Text"), CategoryAttribute("Textbox Settings"), DescriptionAttribute("The string stored in the textbox.")]
         public string Text

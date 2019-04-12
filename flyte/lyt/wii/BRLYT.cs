@@ -108,9 +108,7 @@ namespace flyte.lyt.wii
 
                         break;
                     case "txt1":
-                        TXT1 txt = new TXT1(ref reader);
-                        txt.setMaterialName(mMaterialList.getMaterialNameFromIndex(txt.getMaterialIndex()));
-                        txt.setFontName(mFontList.getFontNameFromIndex(txt.getFontNum()));
+                        TXT1 txt = new TXT1(ref reader, ref mMaterialList, ref mFontList);
 
                         if (parent != null)
                         {
@@ -130,7 +128,7 @@ namespace flyte.lyt.wii
 
                         break;
                     case "wnd1":
-                        WND1 window = new WND1(ref reader);
+                        WND1 window = new WND1(ref reader, ref mMaterialList);
 
                         if (parent != null)
                         {

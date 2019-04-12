@@ -11,6 +11,7 @@
 */
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using flyte.io;
 using flyte.utils;
 
@@ -18,16 +19,16 @@ namespace flyte.lyt.wii
 {
     class WND1 : PAN1
     {
-        public WND1(ref EndianBinaryReader reader) : base (ref reader)
+        public WND1(ref EndianBinaryReader reader, ref MAT1 materials) : base (ref reader)
         {
             base.setType("Window");
 
             long startPos = reader.Pos() - 0x4C;
 
-            mCoord1 = reader.ReadF32();
-            mCoord2 = reader.ReadF32();
-            mCoord3 = reader.ReadF32();
-            mCoord4 = reader.ReadF32();
+            mContentOverflowLeft = reader.ReadF32();
+            mContentOverflowRight = reader.ReadF32();
+            mContentOverflowTop = reader.ReadF32();
+            mContentOverflowBottom = reader.ReadF32();
             mFrameCount = reader.ReadByte();
             mFlag = reader.ReadByte();
             reader.ReadUInt16(); // padding
@@ -63,13 +64,15 @@ namespace flyte.lyt.wii
                 mFrames.Add(new WND1Frame(ref reader));
             }
 
+            mMaterialName = materials.getMaterialNameFromIndex(mMaterialIndex);
+
             reader.Seek(startPos + mSectionSize);
         }
 
-        float mCoord1;
-        float mCoord2;
-        float mCoord3;
-        float mCoord4;
+        float mContentOverflowLeft;
+        float mContentOverflowRight;
+        float mContentOverflowTop;
+        float mContentOverflowBottom;
         byte mFrameCount;
         byte mFlag;
 
@@ -82,9 +85,46 @@ namespace flyte.lyt.wii
         ushort mMaterialIndex;
         byte mNumUVSets;
 
+        string mMaterialName;
+
         List<UVCoordSet> mUVSets;
         List<int> mFrameOffsets;
         List<WND1Frame> mFrames;
+
+        [DisplayName("Content Overflow Left"), CategoryAttribute("Window Settings"), DescriptionAttribute("The content overflow of the left side of the window.")]
+        public float ContentOverFlowLeft 
+        {
+            get { return mContentOverflowLeft; }
+            set { mContentOverflowLeft = value; }
+        }
+
+        [DisplayName("Content Overflow Right"), CategoryAttribute("Window Settings"), DescriptionAttribute("The content overflow of the right side of the window.")]
+        public float ContentOverFlowRight
+        {
+            get { return mContentOverflowRight; }
+            set { mContentOverflowRight = value; }
+        }
+
+        [DisplayName("Content Overflow Top"), CategoryAttribute("Window Settings"), DescriptionAttribute("The content overflow of the top of the window.")]
+        public float ContentOverFlowTop
+        {
+            get { return mContentOverflowTop; }
+            set { mContentOverflowTop = value; }
+        }
+
+        [DisplayName("Content Overflow Bottom"), CategoryAttribute("Window Settings"), DescriptionAttribute("The content overflow of the bottom of the window.")]
+        public float ContentOverFlowBottom
+        {
+            get { return mContentOverflowBottom; }
+            set { mContentOverflowBottom = value; }
+        }
+
+        [DisplayName("Material"), CategoryAttribute("Window Settings"), DescriptionAttribute("The material name used with the window.")]
+        public string Material
+        {
+            get { return mMaterialName; }
+            set { mMaterialName = value; }
+        }
     }
 
     class WND1Frame
