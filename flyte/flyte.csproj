@@ -62,6 +62,7 @@
     <Compile Include="lyt\3ds\BCLYT.cs" />
     <Compile Include="lyt\3ds\BND1.cs" />
     <Compile Include="lyt\3ds\FNL1.cs" />
+    <Compile Include="lyt\3ds\GRP1.cs" />
     <Compile Include="lyt\3ds\MAT1.cs" />
     <Compile Include="lyt\3ds\material\AlphaCompare.cs" />
     <Compile Include="lyt\3ds\material\BlendMode.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="lyt\3ds\USD1.cs" />
     <Compile Include="lyt\3ds\WND1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
+    <Compile Include="lyt\UserdataBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />
     <Compile Include="lyt\wii\BRLYT.cs" />
     <Compile Include="lyt\wii\FNL1.cs" />

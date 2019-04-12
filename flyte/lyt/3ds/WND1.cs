@@ -9,7 +9,7 @@ namespace flyte.lyt._3ds
 {
     class WND1 : PAN1
     {
-        public WND1(ref EndianBinaryReader reader) : base(ref reader)
+        public WND1(ref EndianBinaryReader reader, ref MAT1 materials) : base(ref reader)
         {
             base.setType("Window");
 

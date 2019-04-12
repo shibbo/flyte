@@ -32,6 +32,7 @@ namespace flyte.lyt
         public LayoutBase getParent() { return mParent; }
 
         public LayoutBase getRootPanel() { return mRootPanel; }
+        public virtual LayoutBase getRootGroup() { return null; }
 
         public bool hasChildren() { return mChildren != null; }
 

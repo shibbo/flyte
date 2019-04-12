@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,5 +72,127 @@ namespace flyte.lyt._3ds
         bool mAdjustToPartsBounds;
 
         List<UserdataBase> mUserDatas;
+
+        [DisplayName("Name"), CategoryAttribute("General"), DescriptionAttribute("The name of the element.")]
+        public string Name
+        {
+            get { return mName; }
+            set { mName = value; }
+        }
+
+        // non-editable
+        [DisplayName("Type"), CategoryAttribute("General"), DescriptionAttribute("The element type."), ReadOnly(true)]
+        public string Type
+        {
+            get { return base.getType(); }
+        }
+
+        [DisplayName("Is Visible"), CategoryAttribute("Flags"), DescriptionAttribute("The visibility of this element.")]
+        public bool IsVisible
+        {
+            get { return mIsVisible; }
+            set { mIsVisible = value; }
+        }
+
+        [DisplayName("Has Alpha Influence"), CategoryAttribute("Flags"), DescriptionAttribute("If the element has an alpha influence.")]
+        public bool HasAlphaInfluence
+        {
+            get { return mInfluencedAlpha; }
+            set { mInfluencedAlpha = value; }
+        }
+
+        [DisplayName("Location Adjust"), CategoryAttribute("Flags"), DescriptionAttribute("Unknown.")]
+        public bool LocationAdjust
+        {
+            get { return mLocationAdjust; }
+            set { mLocationAdjust = value; }
+        }
+
+        [DisplayName("Alpha"), CategoryAttribute("Color"), DescriptionAttribute("The alpha color of this element.")]
+        public byte Alpha
+        {
+            get { return mAlpha; }
+            set { mAlpha = value; }
+        }
+
+        [DisplayName("Translation X"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The X position of this element, relative to its parent element.")]
+        public float PositionX
+        {
+            get { return mPosX; }
+            set { mPosX = value; }
+        }
+
+        [DisplayName("Translation Y"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The Y position of this element, relative to its parent element.")]
+        public float PositionY
+        {
+            get { return mPosY; }
+            set { mPosY = value; }
+        }
+
+        [DisplayName("Translation Z"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The Z position of this element, relative to its parent element.")]
+        public float PositionZ
+        {
+            get { return mPosZ; }
+            set { mPosZ = value; }
+        }
+
+        [DisplayName("Rotation X"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The X rotation of this element, relative to its parent element.")]
+        public float RotationX
+        {
+            get { return mRotX; }
+            set { mRotX = value; }
+        }
+
+        [DisplayName("Rotation Y"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The Y rotation of this element, relative to its parent element.")]
+        public float RotationY
+        {
+            get { return mRotY; }
+            set { mRotY = value; }
+        }
+
+        [DisplayName("Rotation Z"), CategoryAttribute("Positioning"),
+            DescriptionAttribute("The Z rotation of this element, relative to its parent element.")]
+        public float RotationZ
+        {
+            get { return mRotZ; }
+            set { mRotZ = value; }
+        }
+
+        [DisplayName("Scale X"), CategoryAttribute("Scaling"),
+            DescriptionAttribute("The X scale of this element, relative to its parent element.")]
+        public float ScaleX
+        {
+            get { return mScaleX; }
+            set { mRotZ = value; }
+        }
+
+        [DisplayName("Scale Y"), CategoryAttribute("Scaling"),
+            DescriptionAttribute("The Y scale of this element, relative to its parent element.")]
+        public float ScaleY
+        {
+            get { return mScaleY; }
+            set { mRotY = value; }
+        }
+
+        [DisplayName("Width"), CategoryAttribute("Scaling"),
+            DescriptionAttribute("The width of this element.")]
+        public float Width
+        {
+            get { return mWidth; }
+            set { mWidth = value; }
+        }
+
+        [DisplayName("Height"), CategoryAttribute("Scaling"),
+            DescriptionAttribute("The height of this element.")]
+        public float Height
+        {
+            get { return mHeight; }
+            set { mHeight = value; }
+        }
     }
 }

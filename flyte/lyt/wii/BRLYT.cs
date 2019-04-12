@@ -37,18 +37,18 @@ namespace flyte.lyt.wii
             mNumSections = reader.ReadUInt16();
 
             mLayoutParams = new LYT1(ref reader);
-            mGroups = new List<GRP1>();
 
             // for panels
             LayoutBase prev = null;
             LayoutBase parent = null;
 
             bool isRootPaneSet = false;
+            bool isRootGroupSet = false;
 
             // for groups
             LayoutBase previousGroup = null;
             LayoutBase groupParent = null;
-            
+
             for (int i = 0; i < mNumSections; i++)
             {
                 string magic = reader.ReadString(4);
@@ -152,7 +152,12 @@ namespace flyte.lyt.wii
                         break;
                     case "grp1":
                         GRP1 group = new GRP1(ref reader);
-                        mGroups.Add(group);
+
+                        if (!isRootGroupSet)
+                        {
+                            mRootGroup = group;
+                            isRootGroupSet = true;
+                        }
 
                         if (groupParent != null)
                         {
@@ -216,6 +221,7 @@ namespace flyte.lyt.wii
         }
 
         public override LayoutBase getLayoutParams() { return mLayoutParams; }
+        public override LayoutBase getRootGroup() { return mRootGroup; }
 
         ushort mBOM;
         ushort mVersion;
@@ -228,7 +234,7 @@ namespace flyte.lyt.wii
         FNL1 mFontList;
         MAT1 mMaterialList;
 
-        List<GRP1> mGroups;
+        GRP1 mRootGroup;
     }
 
     class LYT1 : LayoutBase

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using flyte.io;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt._3ds
 {
     class GRP1 : LayoutBase
     {

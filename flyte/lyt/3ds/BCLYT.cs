@@ -13,9 +13,11 @@
 using flyte.io;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static flyte.utils.Endian;
 
 namespace flyte.lyt._3ds
@@ -45,7 +47,12 @@ namespace flyte.lyt._3ds
             LayoutBase prev = null;
             LayoutBase parent = null;
 
+            // for groups
+            LayoutBase previousGroup = null;
+            LayoutBase groupParent = null;
+
             bool isRootPaneSet = false;
+            bool isRootGroupSet = false;
 
             string magic = "";
 
@@ -122,6 +129,17 @@ namespace flyte.lyt._3ds
                             prev.addUserData(usd);
 
                         break;
+                    case "wnd1":
+                        WND1 window = new WND1(ref reader, ref mMaterialList);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(window);
+                            window.setParent(parent);
+                        }
+
+                        prev = window;
+                        break;
                     case "pas1":
                         if (prev != null)
                             parent = prev;
@@ -131,6 +149,38 @@ namespace flyte.lyt._3ds
                     case "pae1":
                         prev = parent;
                         parent = prev.getParent();
+
+                        reader.ReadUInt32();
+                        break;
+                    case "pts1":
+                        MessageBox.Show("PTS1 found! Do tell shibboleet about this...");
+                        break;
+                    case "grp1":
+                        GRP1 group = new GRP1(ref reader);
+                        
+                        if (!isRootGroupSet)
+                        {
+                            mRootGroup = group;
+                            isRootGroupSet = true;
+                        }
+
+                        if (groupParent != null)
+                        {
+                            groupParent.addChild(group);
+                            group.setParent(groupParent);
+                        }
+
+                        previousGroup = group;
+                        break;
+                    case "grs1":
+                        if (previousGroup != null)
+                            groupParent = previousGroup;
+
+                        reader.ReadUInt32();
+                        break;
+                    case "gre1":
+                        previousGroup = groupParent;
+                        groupParent = previousGroup.getParent();
 
                         reader.ReadUInt32();
                         break;
@@ -179,6 +229,7 @@ namespace flyte.lyt._3ds
         }
 
         public override LayoutBase getLayoutParams() { return mLayoutParams; }
+        public override LayoutBase getRootGroup() { return mRootGroup; }
 
         ushort mBOM;
         ushort mHeaderLength;
@@ -192,10 +243,18 @@ namespace flyte.lyt._3ds
         MAT1 mMaterialList;
 
         List<USD1> mUserDataEntries;
+
+        GRP1 mRootGroup;
     }
 
     class LYT1 : LayoutBase
     {
+        public enum OriginType
+        {
+            Classic = 0,
+            Normal = 1
+        }
+
         public LYT1(ref EndianBinaryReader reader)
         {
             if (reader.ReadString(4) != "lyt1")
@@ -205,15 +264,39 @@ namespace flyte.lyt._3ds
             }
 
             mSectionSize = reader.ReadUInt32();
-            mOriginType = reader.ReadUInt32();
+            mOriginType = (OriginType)reader.ReadUInt32();
             mCanvasSizeX = reader.ReadF32();
             mCanvasSizeY = reader.ReadF32();
         }
 
         uint mSectionSize;
-        uint mOriginType;
+        OriginType mOriginType;
         float mCanvasSizeX;
         float mCanvasSizeY;
+
+        [DisplayName("Origin Type"), CategoryAttribute("General"),
+            DescriptionAttribute("The origin type for the entire canvas.")]
+        public OriginType Origin
+        {
+            get { return mOriginType; }
+            set { mOriginType = value; }
+        }
+
+        [DisplayName("Canvas Size X"), CategoryAttribute("General"),
+            DescriptionAttribute("The X size of the entire canvas.")]
+        public float CanvasSizeX
+        {
+            get { return mCanvasSizeX; }
+            set { mCanvasSizeX = value; }
+        }
+
+        [DisplayName("Canvas Size Y"), CategoryAttribute("General"),
+            DescriptionAttribute("The Y size of the entire canvas.")]
+        public float CanvasSizeY
+        {
+            get { return mCanvasSizeY; }
+            set { mCanvasSizeY = value; }
+        }
     }
 
 }

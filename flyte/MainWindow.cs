@@ -215,9 +215,11 @@ namespace flyte
             }
 
             LayoutBase pane = null;
+            LayoutBase group = null;
 
             // now we have to grab our root panel, which is differnt on each console
             // so we have to specifically get the one we want
+            // the same applies to our root group
             switch (layoutType)
             {
                 case ".brlyt":
@@ -234,6 +236,18 @@ namespace flyte
                     panelList.Nodes.Add(n1);
                     fillNodes(pane.getChildren());
 
+                    group = (lyt.wii.GRP1)mMainLayout.getRootGroup();
+
+                    TreeNode n1_1 = new TreeNode
+                    {
+                        Tag = group,
+                        Name = group.mName,
+                        Text = group.mName,
+                    };
+
+                    panelList.Nodes.Add(n1_1);
+                    fillNodes(group.getChildren());
+
                     break;
                 case ".bclyt":
                     pane = (lyt._3ds.PAN1)mMainLayout.getRootPanel();
@@ -248,6 +262,18 @@ namespace flyte
 
                     panelList.Nodes.Add(n2);
                     fillNodes(pane.getChildren());
+
+                    group = (lyt._3ds.GRP1)mMainLayout.getRootGroup();
+
+                    TreeNode n2_1 = new TreeNode
+                    {
+                        Tag = group,
+                        Name = group.mName,
+                        Text = group.mName,
+                    };
+
+                    panelList.Nodes.Add(n2_1);
+                    fillNodes(group.getChildren());
 
                     break;
             }
