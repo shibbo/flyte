@@ -47,6 +47,8 @@ namespace flyte.archive
         public virtual Dictionary<string, byte[]> getLayoutImages() { return null; }
         public virtual Dictionary<string, byte[]> getLayoutControls() { return null; }
         public virtual bool isStringTableObfuscated() { return false; }
+        public virtual List<string> getArchiveFileNames() { return null; }
+        public virtual byte[] getDataByName(string name) { return null; }
 
         ArchiveType mType;
         List<string> mFileNames;

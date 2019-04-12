@@ -68,7 +68,6 @@ namespace flyte.archive.common
                     string name = mFileNameTable.getNames()[i];
 
                     byte[] data = reader.ReadBytesFrom(mDataOffset + nodes[i].mDataBegin, (int)dataLen);
-                    Console.WriteLine(name);
                     mFileData.Add(name, data);
                 }
             }
@@ -132,6 +131,30 @@ namespace flyte.archive.common
             }
 
             return files;
+        }
+
+        public override List<string> getArchiveFileNames()
+        {
+            List<string> strs = new List<string>();
+
+            foreach (KeyValuePair<string, byte[]> pair in mFileData)
+            {
+                if (pair.Key.Contains(".lyarc") || pair.Key.Contains(".sarc"))
+                    strs.Add(pair.Key);
+            }
+
+            return strs;
+        }
+
+        public override byte[] getDataByName(string name)
+        {
+            foreach (KeyValuePair<string, byte[]> pair in mFileData)
+            {
+                if (pair.Key == name)
+                    return pair.Value;
+            }
+
+            return null;
         }
 
         ushort mBOM;
@@ -230,8 +253,6 @@ namespace flyte.archive.common
             for (int i = 0; i < numFiles; i++)
             {
                 mNames.Add(reader.ReadStringNT());
-
-                Console.WriteLine(mNames[i]);
 
                 long val = 0x4 - (reader.Pos() % 0x4);
 

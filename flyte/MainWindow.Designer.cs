@@ -52,16 +52,16 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.materialList = new System.Windows.Forms.ListBox();
             this.elementsPage = new System.Windows.Forms.TabPage();
-            this.layoutPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.texturesPage = new System.Windows.Forms.TabPage();
-            this.texturesList = new System.Windows.Forms.ListBox();
-            this.fontsPage = new System.Windows.Forms.TabPage();
-            this.fontsList = new System.Windows.Forms.ListBox();
             this.elementActionsToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.layoutPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.texturesPage = new System.Windows.Forms.TabPage();
+            this.texturesList = new System.Windows.Forms.ListBox();
+            this.fontsPage = new System.Windows.Forms.TabPage();
+            this.fontsList = new System.Windows.Forms.ListBox();
             this.mainMenuStrip.SuspendLayout();
             this.mainStatusStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -69,9 +69,9 @@
             this.materialsPage.SuspendLayout();
             this.materialsToolStrip.SuspendLayout();
             this.elementsPage.SuspendLayout();
+            this.elementActionsToolStrip.SuspendLayout();
             this.texturesPage.SuspendLayout();
             this.fontsPage.SuspendLayout();
-            this.elementActionsToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -99,7 +99,8 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -107,21 +108,23 @@
             // 
             this.extractToolStripMenuItem.Enabled = false;
             this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-            this.extractToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.extractToolStripMenuItem.Text = "Extract";
             this.extractToolStripMenuItem.Click += new System.EventHandler(this.ExtractToolStripMenuItem_Click);
             // 
             // closeFileToolStripMenuItem
             // 
             this.closeFileToolStripMenuItem.Name = "closeFileToolStripMenuItem";
-            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.closeFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeFileToolStripMenuItem.Text = "Close File";
             this.closeFileToolStripMenuItem.Click += new System.EventHandler(this.CloseFileToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.quitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.QuitToolStripMenuItem_Click);
             // 
@@ -227,7 +230,7 @@
             this.layoutPage.Location = new System.Drawing.Point(4, 22);
             this.layoutPage.Name = "layoutPage";
             this.layoutPage.Padding = new System.Windows.Forms.Padding(3);
-            this.layoutPage.Size = new System.Drawing.Size(243, 375);
+            this.layoutPage.Size = new System.Drawing.Size(258, 357);
             this.layoutPage.TabIndex = 3;
             this.layoutPage.Text = "Layout";
             this.layoutPage.UseVisualStyleBackColor = true;
@@ -237,7 +240,7 @@
             this.mainPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.mainPropertyGrid.Name = "mainPropertyGrid";
-            this.mainPropertyGrid.Size = new System.Drawing.Size(237, 369);
+            this.mainPropertyGrid.Size = new System.Drawing.Size(252, 351);
             this.mainPropertyGrid.TabIndex = 0;
             this.mainPropertyGrid.ToolbarVisible = false;
             // 
@@ -297,56 +300,6 @@
             this.elementsPage.Text = "Elements";
             this.elementsPage.UseVisualStyleBackColor = true;
             // 
-            // layoutPropertyGrid
-            // 
-            this.layoutPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.layoutPropertyGrid.Location = new System.Drawing.Point(3, 215);
-            this.layoutPropertyGrid.Name = "layoutPropertyGrid";
-            this.layoutPropertyGrid.Size = new System.Drawing.Size(252, 139);
-            this.layoutPropertyGrid.TabIndex = 5;
-            this.layoutPropertyGrid.ToolbarVisible = false;
-            // 
-            // texturesPage
-            // 
-            this.texturesPage.Controls.Add(this.texturesList);
-            this.texturesPage.Location = new System.Drawing.Point(4, 22);
-            this.texturesPage.Name = "texturesPage";
-            this.texturesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.texturesPage.Size = new System.Drawing.Size(243, 375);
-            this.texturesPage.TabIndex = 1;
-            this.texturesPage.Text = "Textures";
-            this.texturesPage.UseVisualStyleBackColor = true;
-            // 
-            // texturesList
-            // 
-            this.texturesList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.texturesList.FormattingEnabled = true;
-            this.texturesList.Location = new System.Drawing.Point(3, 3);
-            this.texturesList.Name = "texturesList";
-            this.texturesList.Size = new System.Drawing.Size(237, 369);
-            this.texturesList.TabIndex = 0;
-            // 
-            // fontsPage
-            // 
-            this.fontsPage.Controls.Add(this.fontsList);
-            this.fontsPage.Location = new System.Drawing.Point(4, 22);
-            this.fontsPage.Name = "fontsPage";
-            this.fontsPage.Size = new System.Drawing.Size(243, 375);
-            this.fontsPage.TabIndex = 2;
-            this.fontsPage.Text = "Fonts";
-            this.fontsPage.UseVisualStyleBackColor = true;
-            // 
-            // fontsList
-            // 
-            this.fontsList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fontsList.FormattingEnabled = true;
-            this.fontsList.Location = new System.Drawing.Point(0, 0);
-            this.fontsList.Name = "fontsList";
-            this.fontsList.Size = new System.Drawing.Size(243, 375);
-            this.fontsList.TabIndex = 0;
-            // 
             // elementActionsToolStrip
             // 
             this.elementActionsToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -401,6 +354,56 @@
             this.toolStripButton5.Size = new System.Drawing.Size(38, 22);
             this.toolStripButton5.Text = "Clear";
             // 
+            // layoutPropertyGrid
+            // 
+            this.layoutPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.layoutPropertyGrid.Location = new System.Drawing.Point(3, 215);
+            this.layoutPropertyGrid.Name = "layoutPropertyGrid";
+            this.layoutPropertyGrid.Size = new System.Drawing.Size(252, 139);
+            this.layoutPropertyGrid.TabIndex = 5;
+            this.layoutPropertyGrid.ToolbarVisible = false;
+            // 
+            // texturesPage
+            // 
+            this.texturesPage.Controls.Add(this.texturesList);
+            this.texturesPage.Location = new System.Drawing.Point(4, 22);
+            this.texturesPage.Name = "texturesPage";
+            this.texturesPage.Padding = new System.Windows.Forms.Padding(3);
+            this.texturesPage.Size = new System.Drawing.Size(258, 357);
+            this.texturesPage.TabIndex = 1;
+            this.texturesPage.Text = "Textures";
+            this.texturesPage.UseVisualStyleBackColor = true;
+            // 
+            // texturesList
+            // 
+            this.texturesList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.texturesList.FormattingEnabled = true;
+            this.texturesList.Location = new System.Drawing.Point(3, 3);
+            this.texturesList.Name = "texturesList";
+            this.texturesList.Size = new System.Drawing.Size(252, 351);
+            this.texturesList.TabIndex = 0;
+            // 
+            // fontsPage
+            // 
+            this.fontsPage.Controls.Add(this.fontsList);
+            this.fontsPage.Location = new System.Drawing.Point(4, 22);
+            this.fontsPage.Name = "fontsPage";
+            this.fontsPage.Size = new System.Drawing.Size(258, 357);
+            this.fontsPage.TabIndex = 2;
+            this.fontsPage.Text = "Fonts";
+            this.fontsPage.UseVisualStyleBackColor = true;
+            // 
+            // fontsList
+            // 
+            this.fontsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fontsList.FormattingEnabled = true;
+            this.fontsList.Location = new System.Drawing.Point(0, 0);
+            this.fontsList.Name = "fontsList";
+            this.fontsList.Size = new System.Drawing.Size(258, 357);
+            this.fontsList.TabIndex = 0;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -426,10 +429,10 @@
             this.materialsToolStrip.PerformLayout();
             this.elementsPage.ResumeLayout(false);
             this.elementsPage.PerformLayout();
-            this.texturesPage.ResumeLayout(false);
-            this.fontsPage.ResumeLayout(false);
             this.elementActionsToolStrip.ResumeLayout(false);
             this.elementActionsToolStrip.PerformLayout();
+            this.texturesPage.ResumeLayout(false);
+            this.fontsPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

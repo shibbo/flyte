@@ -47,12 +47,12 @@ namespace flyte
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Archive Files (*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ)|*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ";
+            dialog.Filter = "Archive Files (*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC)|*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 Clear();
-                ProcessData(dialog.FileName);
+                ProcessData(dialog.FileName, null);
                 this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
             }
         }
@@ -88,10 +88,15 @@ namespace flyte
         /// Process data in an input file that contains a layout.
         /// </summary>
         /// <param name="filename"></param>
-        void ProcessData(string filename)
+        bool ProcessData(string filename, byte[] inData)
         {
+            EndianBinaryReader reader = null;
+
             // now we need to decide what they just opened
-            EndianBinaryReader reader = new EndianBinaryReader(File.Open(filename, FileMode.Open), Encoding.GetEncoding(932));
+            if (inData == null)
+                reader = new EndianBinaryReader(File.Open(filename, FileMode.Open), Encoding.GetEncoding(932));
+            else
+                reader = new EndianBinaryReader(inData);
 
             string magic = "";
 
@@ -160,7 +165,36 @@ namespace flyte
             if (mArchive == null)
             {
                 MessageBox.Show("Format not supported.");
-                return;
+                return false;
+            }
+
+            // the only familiar format with archives in archives is SARC
+            if (mArchive.getType() == ArchiveType.SARC)
+            {
+                List<string> names = mArchive.getArchiveFileNames();
+
+                if (names.Count != 0)
+                {
+                    DialogResult res = MessageBox.Show("This archive has another archive inside of it.\nDo you wish to choose one of the found archives to select a layout?", "Internal Archive", MessageBoxButtons.YesNo);
+
+                    if (res == DialogResult.Yes)
+                    {
+                        LayoutChooser archiveChooser = new LayoutChooser();
+                        archiveChooser.insertEntries(names);
+                        archiveChooser.ShowDialog();
+
+                        // if this worked, we dont need to do anything
+                        bool result = ProcessData(archiveChooser.getSelectedFile(), mArchive.getDataByName(archiveChooser.getSelectedFile()));
+
+                        if (result)
+                            return true;
+                        else
+                        {
+                            MessageBox.Show("Failed to get the internal file.");
+                            return false;
+                        }
+                    }
+                }
             }
 
             // get all of our needed files
@@ -169,6 +203,12 @@ namespace flyte
             mLayoutImages = mArchive.getLayoutImages();
             mLayoutControls = mArchive.getLayoutControls();
 
+            if (mLayoutFiles.Count == 0)
+            {
+                MessageBox.Show("This file contains no layouts.");
+                return false;
+            }
+
             LayoutChooser layoutChooser = new LayoutChooser();
             layoutChooser.insertEntries(new List<string>(mLayoutFiles.Keys));
             layoutChooser.ShowDialog();
@@ -176,7 +216,7 @@ namespace flyte
             string selectedFile = layoutChooser.getSelectedFile();
 
             if (selectedFile == null)
-                return;
+                return false;
 
             string layoutType = Path.GetExtension(selectedFile);
 
@@ -203,7 +243,7 @@ namespace flyte
             }
 
             if (mMainLayout == null)
-                return;
+                return false;
 
             // set our propertygrid with our LYT object
             mainPropertyGrid.SelectedObject = mMainLayout.getLayoutParams();
@@ -211,7 +251,7 @@ namespace flyte
             if (mMainLayout.getRootPanel() == null)
             {
                 MessageBox.Show("Error, the root pane in this layout is not specified.");
-                return;
+                return false;
             }
 
             LayoutBase pane = null;
@@ -298,6 +338,8 @@ namespace flyte
                 foreach (string str in mMainLayout.getMaterialNames())
                     materialList.Items.Add(str);
             }
+
+            return true;
         }
 
         /// <summary>
