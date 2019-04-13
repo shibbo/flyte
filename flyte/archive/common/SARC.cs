@@ -138,12 +138,15 @@ namespace flyte.archive.common
         {
             List<string> strs = new List<string>();
 
-            string[] exts = { ".lyarc", ".sarc", ".szs" };
+            string[] exts = { ".arc", ".lyarc", ".sarc", ".pack", ".szs" };
 
             foreach (KeyValuePair<string, byte[]> pair in mFileData)
             {
-                if (exts.Contains(pair.Key))
-                    strs.Add(pair.Key);
+                for (int i = 0; i < exts.Length; i++)
+                {
+                    if (pair.Key.Contains(exts[i]))
+                        strs.Add(pair.Key);
+                }
             }
 
             return strs;

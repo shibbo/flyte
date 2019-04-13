@@ -47,7 +47,7 @@ namespace flyte
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Archive Files (*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC)|*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC";
+            dialog.Filter = "Archive Files (*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC;*.PACK)|*.DARC;*.NARC;*.RARC;*.ARC;*.SZS;*.LZ;*.LYARC;*.PACK";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -105,7 +105,13 @@ namespace flyte
             {
                 // we have to close our reader so we can properly read this file as a Yaz0 stream
                 reader.Close();
-                MemoryStream ms = new Yaz0(File.Open(filename, FileMode.Open));
+
+                MemoryStream ms = null;
+
+                if (inData == null)
+                    ms = new Yaz0(File.Open(filename, FileMode.Open));
+                else
+                    ms = new Yaz0(new MemoryStream(inData));
 
                 reader = new EndianBinaryReader(ms);
                 magic = reader.ReadStringFrom(0, 4);
