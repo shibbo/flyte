@@ -103,7 +103,7 @@ namespace flyte.archive.wii
         /// </summary>
         /// <param name="name">The file name to find the data for.</param>
         /// <returns>The file data. NULL if the file was not found.</returns>
-        public byte[] getDataFromFile(string name)
+        public override byte[] getDataByName(string name)
         {
             foreach (RARCDirectory dir in mDirectories)
             {
@@ -209,6 +209,26 @@ namespace flyte.archive.wii
             }
 
             return dict;
+        }
+
+        public override List<string> getArchiveFileNames()
+        {
+            List<string> strs = new List<string>();
+
+            string[] exts = { ".arc", ".lyarc", ".sarc", ".pack", ".szs" };
+
+            foreach (RARCNode dir in mNodes)
+            {
+                Console.WriteLine(dir.getName());
+
+                for (int i = 0; i < exts.Length; i++)
+                {
+                    if (dir.getName().Contains(exts[i]))
+                        strs.Add(dir.getName());
+                }
+            }
+
+            return strs;
         }
 
         uint mFileLength;

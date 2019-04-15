@@ -101,6 +101,7 @@
     <Compile Include="lyt\common\TXT1.cs" />
     <Compile Include="lyt\common\USD1.cs" />
     <Compile Include="lyt\common\WND1.cs" />
+    <Compile Include="lyt\gc\BLO.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />

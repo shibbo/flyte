@@ -94,7 +94,7 @@ namespace flyte
             EndianBinaryReader reader = null;
 
             // now we need to decide what they just opened
-            if (inData == null)
+            if (inData == null && filename != "")
                 reader = new EndianBinaryReader(File.Open(filename, FileMode.Open), Encoding.GetEncoding(932));
             else
                 reader = new EndianBinaryReader(inData);
@@ -175,8 +175,8 @@ namespace flyte
                 return false;
             }
 
-            // the only familiar format with archives in archives is SARC
-            if (mArchive.getType() == ArchiveType.SARC)
+            // the only familiar format with archives in archives is SARC and RARC
+            if (mArchive.getType() == ArchiveType.SARC || mArchive.getType() == ArchiveType.RARC)
             {
                 List<string> names = mArchive.getArchiveFileNames();
 
