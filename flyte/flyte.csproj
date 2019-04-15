@@ -79,6 +79,28 @@
     <Compile Include="lyt\3ds\TXT1.cs" />
     <Compile Include="lyt\3ds\USD1.cs" />
     <Compile Include="lyt\3ds\WND1.cs" />
+    <Compile Include="lyt\common\BFLYT.cs" />
+    <Compile Include="lyt\common\BND1.cs" />
+    <Compile Include="lyt\common\CNT1.cs" />
+    <Compile Include="lyt\common\FNL1.cs" />
+    <Compile Include="lyt\common\GRP1.cs" />
+    <Compile Include="lyt\common\MAT1.cs" />
+    <Compile Include="lyt\common\material\AlphaCompare.cs" />
+    <Compile Include="lyt\common\material\BlendMode.cs" />
+    <Compile Include="lyt\common\material\FontShadowParameter.cs" />
+    <Compile Include="lyt\common\material\IndirectParameter.cs" />
+    <Compile Include="lyt\common\material\ProjectionTexGenParam.cs" />
+    <Compile Include="lyt\common\material\TevStage.cs" />
+    <Compile Include="lyt\common\material\TexCoordGen.cs" />
+    <Compile Include="lyt\common\material\TexMap.cs" />
+    <Compile Include="lyt\common\material\TexSRT.cs" />
+    <Compile Include="lyt\common\PAN1.cs" />
+    <Compile Include="lyt\common\PIC1.cs" />
+    <Compile Include="lyt\common\PRT1.cs" />
+    <Compile Include="lyt\common\TXL1.cs" />
+    <Compile Include="lyt\common\TXT1.cs" />
+    <Compile Include="lyt\common\USD1.cs" />
+    <Compile Include="lyt\common\WND1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />
@@ -166,8 +188,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="lyt\common\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

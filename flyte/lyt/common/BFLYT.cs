@@ -1,40 +1,44 @@
-﻿/*
-    © 2019 - shibboleet
-    flyte is free software: you can redistribute it and/or modify it under
-    the terms of the GNU General Public License as published by the Free
-    Software Foundation, either version 3 of the License, or (at your option)
-    any later version.
-    flyte is distributed in the hope that it will be useful, but WITHOUT ANY 
-    WARRANTY; See the GNU General Public License for more details.
-    You should have received a copy of the GNU General Public License along 
-    with flyte. If not, see http://www.gnu.org/licenses/.
-*/
-
-using flyte.io;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using static flyte.utils.Endian;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using flyte.io;
 
-namespace flyte.lyt.wii
+namespace flyte.lyt.common
 {
-    class BRLYT : LayoutBase
+    class BFLYT : LayoutBase
     {
-        public BRLYT(ref EndianBinaryReader reader) : base()
+        public BFLYT(ref EndianBinaryReader reader) : base()
         {
-            reader.SetEndianess(Endianess.Big);
-
-            if (reader.ReadString(4) != "RLYT")
+            if (reader.ReadString(4) != "FLYT")
             {
-                Console.WriteLine("Bad magic. Expected RLYT.");
+                Console.WriteLine("Bad magic. Expected FLYT.");
                 return;
             }
 
             mBOM = reader.ReadUInt16();
-            mVersion = reader.ReadUInt16();
-            mFileLength = reader.ReadUInt32();
-            mHeaderLength = reader.ReadUInt16();
+
+            if (mBOM == 0xFEFF)
+                reader.SetEndianess(utils.Endian.Endianess.Little);
+            else
+                reader.SetEndianess(utils.Endian.Endianess.Big);
+
+            mHeaderSize = reader.ReadUInt16();
+            mVersion = reader.ReadUInt32();
+
+            mVersionMajor = mVersion >> 24;
+            mVersionMinor = (mVersion >> 16) & 0xFF;
+            mVersionMicro = (mVersion >> 8) & 0xFF;
+            mVersionMicro2 = mVersion & 0xFF;
+
+            string str = String.Format("Version: {0}.{1}.{2}.{3}", mVersionMajor, mVersionMinor, mVersionMicro, mVersionMicro2);
+            Console.WriteLine(str);
+
+            mFileSize = reader.ReadUInt32();
             mNumSections = reader.ReadUInt16();
+            reader.ReadUInt16();
 
             mLayoutParams = new LYT1(ref reader);
 
@@ -49,9 +53,11 @@ namespace flyte.lyt.wii
             LayoutBase previousGroup = null;
             LayoutBase groupParent = null;
 
-            for (int i = 0; i < mNumSections; i++)
+            string magic = "";
+
+            for (ushort i = 0; i < mNumSections - 1; i++)
             {
-                string magic = reader.ReadString(4);
+                magic = reader.ReadString(4);
 
                 switch (magic)
                 {
@@ -62,13 +68,11 @@ namespace flyte.lyt.wii
                         mFontList = new FNL1(ref reader);
                         break;
                     case "mat1":
-                        mMaterialList = new MAT1(ref reader);
+                        mMaterialList = new MAT1(ref reader, mVersion);
                         break;
                     case "pan1":
                         PAN1 panel = new PAN1(ref reader);
-                        
-                        // root panel *should* be the first thing in the list of elements
-                        // so if it isn't, then the layout is wrong
+
                         if (!isRootPaneSet)
                         {
                             mRootPanel = panel;
@@ -84,7 +88,7 @@ namespace flyte.lyt.wii
                         prev = panel;
                         break;
                     case "pic1":
-                        PIC1 pic = new PIC1(ref reader, ref mMaterialList);
+                        PIC1 pic = new PIC1(ref reader, ref mMaterialList, mVersionMajor, mVersionMinor);
 
                         if (parent != null)
                         {
@@ -93,7 +97,17 @@ namespace flyte.lyt.wii
                         }
 
                         prev = pic;
+                        break;
+                    case "txt1":
+                        TXT1 txt = new TXT1(ref reader, ref mMaterialList, ref mFontList, mVersion);
 
+                        if (parent != null)
+                        {
+                            parent.addChild(txt);
+                            txt.setParent(parent);
+                        }
+
+                        prev = txt;
                         break;
                     case "bnd1":
                         BND1 bnd = new BND1(ref reader);
@@ -107,25 +121,16 @@ namespace flyte.lyt.wii
                         prev = bnd;
 
                         break;
-                    case "txt1":
-                        TXT1 txt = new TXT1(ref reader, ref mMaterialList, ref mFontList);
+                    case "prt1":
+                        PRT1 prt = new PRT1(ref reader);
 
                         if (parent != null)
                         {
-                            parent.addChild(txt);
-                            txt.setParent(parent);
+                            parent.addChild(prt);
+                            prt.setParent(parent);
                         }
 
-                        prev = txt;
-
-                        break;
-                    case "usd1":
-                        // user data is assigned to the previous read element
-                        USD1 usd = new USD1(ref reader);
-
-                        if (prev != null)
-                            prev.addUserData(usd);
-
+                        prev = prt;
                         break;
                     case "wnd1":
                         WND1 window = new WND1(ref reader, ref mMaterialList);
@@ -137,6 +142,24 @@ namespace flyte.lyt.wii
                         }
 
                         prev = window;
+                        break;
+                    case "cnt1":
+                        CNT1 cnt = new CNT1(ref reader, mVersionMajor);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(cnt);
+                            cnt.setParent(parent);
+                        }
+
+                        prev = cnt;
+                        break;
+                    case "usd1":
+                        USD1 usd = new USD1(ref reader);
+
+                        if (prev != null)
+                            prev.addUserData(usd);
+
                         break;
                     case "pas1":
                         if (prev != null)
@@ -151,7 +174,7 @@ namespace flyte.lyt.wii
                         reader.ReadUInt32();
                         break;
                     case "grp1":
-                        GRP1 group = new GRP1(ref reader);
+                        GRP1 group = new GRP1(ref reader, mVersionMajor);
 
                         if (!isRootGroupSet)
                         {
@@ -169,7 +192,7 @@ namespace flyte.lyt.wii
                         break;
                     case "grs1":
                         if (previousGroup != null)
-                             groupParent = previousGroup;
+                            groupParent = previousGroup;
 
                         reader.ReadUInt32();
                         break;
@@ -178,6 +201,9 @@ namespace flyte.lyt.wii
                         groupParent = previousGroup.getParent();
 
                         reader.ReadUInt32();
+                        break;
+                    default:
+                        Console.WriteLine("Unsupported magic " + magic);
                         break;
                 }
             }
@@ -223,10 +249,11 @@ namespace flyte.lyt.wii
         public override LayoutBase getLayoutParams() { return mLayoutParams; }
         public override LayoutBase getRootGroup() { return mRootGroup; }
 
+
         ushort mBOM;
-        ushort mVersion;
-        uint mFileLength;
-        ushort mHeaderLength;
+        ushort mHeaderSize;
+        uint mVersion;
+        uint mFileSize;
         ushort mNumSections;
 
         LYT1 mLayoutParams;
@@ -235,12 +262,19 @@ namespace flyte.lyt.wii
         MAT1 mMaterialList;
 
         GRP1 mRootGroup;
+
+        uint mVersionMajor;
+        uint mVersionMinor;
+        uint mVersionMicro;
+        uint mVersionMicro2;
     }
 
     class LYT1 : LayoutBase
     {
-        public LYT1(ref EndianBinaryReader reader)
+        public LYT1(ref EndianBinaryReader reader) : base()
         {
+            long startPos = reader.Pos();
+
             if (reader.ReadString(4) != "lyt1")
             {
                 Console.WriteLine("Bad magic. Expected lyt1.");
@@ -248,37 +282,62 @@ namespace flyte.lyt.wii
             }
 
             mSectionSize = reader.ReadUInt32();
-            mIsCentered = Convert.ToBoolean(reader.ReadByte());
-            mPadding = reader.ReadBytes(0x3);
+            mDrawnFromCenter = reader.ReadByte();
+            reader.ReadBytes(0x3);
             mWidth = reader.ReadF32();
             mHeight = reader.ReadF32();
+            mMaxPartsWidth = reader.ReadF32();
+            mMaxPartsHeight = reader.ReadF32();
+            mName = reader.ReadStringNT();
+
+            reader.Seek(startPos + mSectionSize);
         }
 
         uint mSectionSize;
-        bool mIsCentered;
-        byte[] mPadding; // supposed padding
+        byte mDrawnFromCenter;
         float mWidth;
         float mHeight;
+        float mMaxPartsWidth;
+        float mMaxPartsHeight;
 
-        [DisplayName("Is Centered"), CategoryAttribute("General"), DescriptionAttribute("Centers the entire layout if true.")]
-        public bool IsCentered
+        [DisplayName("Name"), CategoryAttribute("General"),
+            DescriptionAttribute("The name of the layout.")]
+        public string Name
         {
-            get { return mIsCentered; }
-            set { mIsCentered = value; }
+            get { return mName; }
+            set { mName = value; }
         }
 
-        [DisplayName("Width"), CategoryAttribute("General"), DescriptionAttribute("Width of the layout.")]
+        [DisplayName("Width"), CategoryAttribute("General"),
+            DescriptionAttribute("The width of the entire canvas.")]
         public float Width
         {
             get { return mWidth; }
             set { mWidth = value; }
         }
 
-        [DisplayName("Height"), CategoryAttribute("General"), DescriptionAttribute("Height of the layout.")]
+        [DisplayName("Height"), CategoryAttribute("General"),
+            DescriptionAttribute("The height of the entire canvas.")]
         public float Height
         {
             get { return mHeight; }
             set { mHeight = value; }
+        }
+
+        [DisplayName("MaxPartsWidth"), CategoryAttribute("General"),
+            DescriptionAttribute("The width of the entire canvas.")]
+        public float MaxPartsWidth
+        {
+            get { return mMaxPartsWidth; }
+            set { mMaxPartsWidth = value; }
+        }
+
+        [DisplayName("MaxPartsHeight"), CategoryAttribute("General"),
+            DescriptionAttribute("The height of the entire canvas.")]
+        public float MaxPartsHeight
+        {
+            get { return mMaxPartsHeight; }
+            set { mMaxPartsHeight = value; }
         }
     }
 }

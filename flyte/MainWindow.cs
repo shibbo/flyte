@@ -27,6 +27,7 @@ using flyte.lyt._3ds;
 using static flyte.utils.Endian;
 using System.Text;
 using flyte.img.wii;
+using flyte.lyt.common;
 
 namespace flyte
 {
@@ -243,6 +244,11 @@ namespace flyte
                     layoutReader = new EndianBinaryReader(data);
                     mMainLayout = new BCLYT(ref layoutReader);
                     break;
+                case ".bflyt":
+                    data = mLayoutFiles[selectedFile];
+                    layoutReader = new EndianBinaryReader(data);
+                    mMainLayout = new BFLYT(ref layoutReader);
+                    break;
                 default:
                     MessageBox.Show("This format is not supported yet.");
                     break;
@@ -263,65 +269,36 @@ namespace flyte
             LayoutBase pane = null;
             LayoutBase group = null;
 
-            // now we have to grab our root panel, which is differnt on each console
+            // now we have to grab our root panel, which is different on each console
             // so we have to specifically get the one we want
             // the same applies to our root group
-            switch (layoutType)
+            pane = mMainLayout.getRootPanel();
+
+            // this should be RootPane
+            TreeNode n1 = new TreeNode
             {
-                case ".brlyt":
-                    pane = (lyt.wii.PAN1)mMainLayout.getRootPanel();
+                Tag = pane,
+                Name = pane.mName,
+                Text = pane.mName,
+            };
 
-                    // this should be RootPane
-                    TreeNode n1 = new TreeNode
-                    {
-                        Tag = pane,
-                        Name = pane.mName,
-                        Text = pane.mName,
-                    };
+            panelList.Nodes.Add(n1);
+            fillNodes(pane.getChildren());
 
-                    panelList.Nodes.Add(n1);
-                    fillNodes(pane.getChildren());
+            // now for our groups
+            group = mMainLayout.getRootGroup();
 
-                    group = (lyt.wii.GRP1)mMainLayout.getRootGroup();
+            if (group != null)
+            {
+                TreeNode n1_1 = new TreeNode
+                {
+                    Tag = group,
+                    Name = group.mName,
+                    Text = group.mName,
+                };
 
-                    TreeNode n1_1 = new TreeNode
-                    {
-                        Tag = group,
-                        Name = group.mName,
-                        Text = group.mName,
-                    };
-
-                    panelList.Nodes.Add(n1_1);
-                    fillNodes(group.getChildren());
-
-                    break;
-                case ".bclyt":
-                    pane = (lyt._3ds.PAN1)mMainLayout.getRootPanel();
-
-                    // this should be RootPane
-                    TreeNode n2 = new TreeNode
-                    {
-                        Tag = pane,
-                        Name = pane.mName,
-                        Text = pane.mName,
-                    };
-
-                    panelList.Nodes.Add(n2);
-                    fillNodes(pane.getChildren());
-
-                    group = (lyt._3ds.GRP1)mMainLayout.getRootGroup();
-
-                    TreeNode n2_1 = new TreeNode
-                    {
-                        Tag = group,
-                        Name = group.mName,
-                        Text = group.mName,
-                    };
-
-                    panelList.Nodes.Add(n2_1);
-                    fillNodes(group.getChildren());
-
-                    break;
+                panelList.Nodes.Add(n1_1);
+                fillNodes(group.getChildren());
             }
 
             // now for textures and fonts
@@ -375,6 +352,9 @@ namespace flyte
         /// <param name="nodes"></param>
         void fillNodes(List<LayoutBase> nodes)
         {
+            if (nodes == null)
+                return;
+
             foreach (LayoutBase node in nodes)
             {
                 TreeNode[] parentNodes = panelList.Nodes.Find(node.getParent().mName, true);

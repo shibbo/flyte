@@ -4,20 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using flyte.io;
-using flyte.lyt._3ds.material;
+using flyte.lyt.common.material;
 using flyte.utils;
 using static flyte.utils.Bit;
 
-namespace flyte.lyt._3ds
+namespace flyte.lyt.common
 {
     class MAT1
     {
-        public MAT1(ref EndianBinaryReader reader)
+        public MAT1(ref EndianBinaryReader reader, uint version)
         {
             long startPos = reader.Pos() - 4;
 
             mSectionSize = reader.ReadUInt32();
-            mMaterialCount = reader.ReadUInt32();
+
+            if (version == 0x8030000)
+                mMaterialCount = reader.ReadUInt32();
+            else
+            {
+                mMaterialCount = reader.ReadUInt16();
+                reader.ReadBytes(0x2);
+            }
 
             mSectionOffsets = new uint[mMaterialCount];
 
@@ -26,10 +33,10 @@ namespace flyte.lyt._3ds
 
             mMaterials = new List<Material>();
 
-            foreach(int offset in mSectionOffsets)
+            foreach (int offset in mSectionOffsets)
             {
                 reader.Seek(offset + startPos);
-                mMaterials.Add(new Material(ref reader));
+                mMaterials.Add(new Material(ref reader, version));
             }
 
             reader.Seek(startPos + mSectionSize);
@@ -62,29 +69,39 @@ namespace flyte.lyt._3ds
 
     class Material
     {
-        public Material(ref EndianBinaryReader reader)
+        public Material(ref EndianBinaryReader reader, uint version)
         {
-            mName = reader.ReadString(0x14).Replace("\0", "");
-            mTevColor = reader.ReadRGBAColor8();
+            mName = reader.ReadString(0x1C).Replace("\0", "");
 
-            mTevConstantColors = new RGBAColor8[0x6];
+            // Switch BFLYT
+            if (version == 0x8030000)
+            {
+                mFlags = reader.ReadUInt32();
+                mUnk = reader.ReadUInt32();
 
-            for (int i = 0; i < 6; i++)
-                mTevConstantColors[i] = reader.ReadRGBAColor8();
+                mBlackColor = reader.ReadRGBAColor8();
+                mWhiteColor = reader.ReadRGBAColor8();
+            }
+            // WiiU BFLYT
+            else
+            {
+                mBlackColor = reader.ReadRGBAColor8();
+                mWhiteColor = reader.ReadRGBAColor8();
+                mFlags = reader.ReadUInt32();
+            }
 
-            mFlags = reader.ReadUInt32();
-
-            mTexMapCount = ExtractBits(mFlags, 2, 0);
-            mTexMtxCount = ExtractBits(mFlags, 2, 2);
-            mTexCoordGenCount = ExtractBits(mFlags, 2, 4);
-            mTevStageCount = ExtractBits(mFlags, 2, 6);
-            mHasAlphaCompare = Convert.ToBoolean(ExtractBits(mFlags, 1, 9));
-            mHasBlendMode = Convert.ToBoolean(ExtractBits(mFlags, 1, 10));
-            mUseTextureOnly = Convert.ToBoolean(ExtractBits(mFlags, 1, 11));
-            mSeperateBlendMode = Convert.ToBoolean(ExtractBits(mFlags, 1, 12));
-            mHasIndParam = Convert.ToBoolean(ExtractBits(mFlags, 1, 14));
-            mProjTexGenParamCount = ExtractBits(mFlags, 2, 15);
-            mHasFontShadowParam = Convert.ToBoolean(ExtractBits(mFlags, 1, 17));
+            mTexMapCount = Convert.ToUInt32(mFlags & 0x3);
+            mTexMtxCount = Convert.ToUInt32((mFlags >> 2) & 0x3);
+            mTexCoordGenCount = Convert.ToUInt32((mFlags >> 4) & 0x3);
+            mTevStageCount = Convert.ToUInt32((mFlags >> 6) & 0x7);
+            mHasAlphaCompare = Convert.ToBoolean((mFlags >> 9) & 0x1);
+            mHasBlendMode = Convert.ToBoolean((mFlags >> 10) & 0x1);
+            mUseTextureOnly = Convert.ToBoolean((mFlags >> 11) & 0x1);
+            mSeperateBlendMode = Convert.ToBoolean((mFlags >> 12) & 0x1);
+            mHasIndParam = Convert.ToBoolean((mFlags >> 14) & 0x1);
+            mProjTexGenParamCount = Convert.ToUInt32((mFlags >> 15) & 0x3);
+            mHasFontShadowParam = Convert.ToBoolean((mFlags >> 17) & 0x1);
+            mThresholdingAlphaInterpolation = Convert.ToBoolean((mFlags >> 18) & 0x1);
 
             mTexMaps = new List<TexMap>();
 
@@ -127,8 +144,9 @@ namespace flyte.lyt._3ds
         public string getName() { return mName; }
 
         string mName;
-        RGBAColor8 mTevColor;
-        RGBAColor8[] mTevConstantColors;
+        RGBAColor8 mBlackColor;
+        RGBAColor8 mWhiteColor;
+        uint mUnk;
         uint mFlags;
 
         uint mTexMapCount;
@@ -142,6 +160,7 @@ namespace flyte.lyt._3ds
         bool mHasIndParam;
         uint mProjTexGenParamCount;
         bool mHasFontShadowParam;
+        bool mThresholdingAlphaInterpolation;
 
         List<TexMap> mTexMaps;
         List<TexSRT> mTexSRTs;

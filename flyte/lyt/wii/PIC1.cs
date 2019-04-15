@@ -18,7 +18,7 @@ namespace flyte.lyt.wii
 {
     class PIC1 : PAN1
     {
-        public PIC1(ref EndianBinaryReader reader) : base(ref reader)
+        public PIC1(ref EndianBinaryReader reader, ref MAT1 materials) : base(ref reader)
         {
             base.setType("Picture");
 
@@ -34,6 +34,8 @@ namespace flyte.lyt.wii
 
             for (byte i = 0; i < mNumUVSets; i++)
                 mUVCoordinates.Add(reader.ReadUVCoordSet());
+
+            mMaterialName = materials.getMaterialNameFromIndex(mMaterialIndex);
         }
 
         RGBAColor8 mTopLeftColor;
@@ -45,5 +47,6 @@ namespace flyte.lyt.wii
         byte mUnk5F;
 
         List<UVCoordSet> mUVCoordinates;
+        string mMaterialName;
     }
 }
