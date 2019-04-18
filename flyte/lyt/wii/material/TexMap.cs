@@ -15,7 +15,7 @@ using static flyte.utils.Bit;
 
 namespace flyte.lyt.wii.material
 {
-    class TexMap
+    public class TexMap
     {
         public TexMap(ref EndianBinaryReader reader)
         {

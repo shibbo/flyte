@@ -74,10 +74,12 @@ namespace flyte.archive.wii
             foreach (RARCDirectory dir in mDirectories)
             {
                 // make sure its a file
-                if (dir.getType() == 0x1100)
+                if (dir.getDataLength() != 0)
                 {
                     string name = reader.ReadStringNTFrom(dir.getStringOffset() + strTableOffs);
                     dir.setName(name);
+
+                    Console.WriteLine("Wrote " + name);
 
                     byte[] data = reader.ReadBytesFrom(dir.getDataOffset() + mFileDataOffset, (int)dir.getDataLength());
                     dir.setData(data);
@@ -219,8 +221,6 @@ namespace flyte.archive.wii
 
             foreach (RARCNode dir in mNodes)
             {
-                Console.WriteLine(dir.getName());
-
                 for (int i = 0; i < exts.Length; i++)
                 {
                     if (dir.getName().Contains(exts[i]))

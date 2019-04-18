@@ -19,7 +19,7 @@ using flyte.lyt.wii.material;
 
 namespace flyte.lyt.wii
 {
-    class MAT1
+    public class MAT1 : LayoutBase
     {
         public MAT1(ref EndianBinaryReader reader)
         {
@@ -29,7 +29,7 @@ namespace flyte.lyt.wii
             mNumMaterials = reader.ReadUInt16();
             mUnk0A = reader.ReadUInt16();
 
-            mMaterials = new List<Material>();
+            mMaterials = new List<MaterialBase>();
 
             List<uint> offsets = new List<uint>(mNumMaterials);
 
@@ -50,9 +50,9 @@ namespace flyte.lyt.wii
             return mMaterials[idx].getName();
         }
 
-        public List<Material> getMaterials() { return mMaterials; }
+        public override List<MaterialBase> getMaterials() { return mMaterials; }
 
-        public List<string> getMaterialNames()
+        public override List<string> getMaterialNames()
         {
             List<string> strs = new List<string>();
 
@@ -66,13 +66,15 @@ namespace flyte.lyt.wii
         ushort mNumMaterials;
         ushort mUnk0A;
 
-        List<Material> mMaterials;
+        public List<MaterialBase> mMaterials;
     }
 
-    class Material
+    public class Material : MaterialBase
     {
         public Material(ref EndianBinaryReader reader)
         {
+            base.setType(Type.Wii);
+
             mMaterialName = reader.ReadString(0x14).Replace("\0", "");
 
             mForeColor = reader.ReadRGBAColor16();
@@ -142,9 +144,9 @@ namespace flyte.lyt.wii
                 mBlendMode = new BlendMode(ref reader);
         }
 
-        public string getName() { return mMaterialName; }
+        public List<TexSRT> getTextureSRTs() { return mTexSRTs; }
+        public TevSwapTable getSwapTable() { return mTevSwapTable; }
 
-        string mMaterialName;
         RGBAColor16 mForeColor;
         RGBAColor16 mBackColor;
         RGBAColor16 mColorReg3;

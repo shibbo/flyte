@@ -17,7 +17,7 @@ namespace flyte.lyt.common
 
             mSectionSize = reader.ReadUInt32();
 
-            if (versionMajor < 5)
+            if (versionMajor < 3)
             {
                 mPaneNamesOffset = reader.ReadUInt32();
                 mPaneCount = reader.ReadUInt16();
@@ -36,11 +36,11 @@ namespace flyte.lyt.common
             mName = reader.ReadStringNT();
 
             if (mControlUserNameOffset != 0)
-                mControlName = reader.ReadStringNTFrom(mControlUserNameOffset + startPos);
+                mControlName = reader.ReadStringNTFrom((mControlUserNameOffset - 0x8) + startPos);
             else
                 mControlName = mName;
 
-            reader.Seek(startPos + mPaneNamesOffset);
+            reader.Seek(startPos + mPaneNamesOffset - 0x8);
 
             mPanelNames = new List<string>();
 
@@ -52,18 +52,18 @@ namespace flyte.lyt.common
             mAnimNames = new List<string>();
 
             for (int i = 0; i < mAnimCount; i++)
-                mAnimNames.Add(reader.ReadStringNTFrom(animStart + reader.ReadUInt32()));
+                mAnimNames.Add(reader.ReadStringNTFrom(animStart + reader.ReadUInt32() - 0x8));
 
-            reader.Seek(startPos + mPaneParamNamesOffset);
+            reader.Seek(startPos + mPaneParamNamesOffset - 0x8);
 
             long paramStart = reader.Pos();
 
             mPanelParamNames = new List<string>();
 
             for (int i = 0; i < mPaneCount; i++)
-                mPanelParamNames.Add(reader.ReadStringNTFrom(paramStart + reader.ReadUInt32()));
+                mPanelParamNames.Add(reader.ReadStringNTFrom(paramStart + reader.ReadUInt32() - 0x8));
 
-            reader.Seek(startPos + mAnimParamNamesOffset);
+            reader.Seek(startPos + mAnimParamNamesOffset - 0x8);
 
             paramStart = reader.Pos();
 

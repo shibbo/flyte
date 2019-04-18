@@ -18,7 +18,7 @@ using flyte.utils;
 
 namespace flyte.io
 {
-    class EndianBinaryWriter : BinaryWriter
+    public class EndianBinaryWriter : BinaryWriter
     {
         public EndianBinaryWriter(Stream s) : base(s) { }
 

@@ -94,7 +94,10 @@ namespace flyte.archive.common
                 {
                     // this is me being nice
                     if (pair.Value[0] == 'C' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
-                        files.Add(pair.Key, pair.Value);
+                        files.Add(pair.Key + ".bclyt", pair.Value);
+
+                    if (pair.Value[0] == 'F' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
+                        files.Add(pair.Key + ".bflyt", pair.Value);
                 }
                 else
                 {

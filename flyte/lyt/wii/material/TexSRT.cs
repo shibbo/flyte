@@ -11,10 +11,11 @@
 */
 
 using flyte.io;
+using System.ComponentModel;
 
 namespace flyte.lyt.wii.material
 {
-    class TexSRT
+    public class TexSRT
     {
         public TexSRT(ref EndianBinaryReader reader)
         {
@@ -39,5 +40,40 @@ namespace flyte.lyt.wii.material
         float mRotation;
         float mScaleX;
         float mScaleY;
+
+        [DisplayName("X"), CategoryAttribute("General"), DescriptionAttribute("X position.")]
+        public float PosX
+        {
+            get { return mTransX; }
+            set { mTransY = value; }
+        }
+
+        [DisplayName("Y"), CategoryAttribute("General"), DescriptionAttribute("Y position.")]
+        public float PosY
+        {
+            get { return mTransY; }
+            set { mTransY = value; }
+        }
+
+        [DisplayName("Rotation"), CategoryAttribute("General"), DescriptionAttribute("Rotation of the SRT.")]
+        public float Rotation
+        {
+            get { return mRotation; }
+            set { mRotation = value; }
+        }
+
+        [DisplayName("Scale X"), CategoryAttribute("General"), DescriptionAttribute("X scale.")]
+        public float ScaleX
+        {
+            get { return mScaleX; }
+            set { mScaleY = value; }
+        }
+
+        [DisplayName("Scale Y"), CategoryAttribute("General"), DescriptionAttribute("Y scale.")]
+        public float ScaleY
+        {
+            get { return mScaleY; }
+            set { mScaleY = value; }
+        }
     }
 }

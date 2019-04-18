@@ -22,12 +22,12 @@ using flyte.io;
 using flyte.lyt;
 using flyte.lyt.wii;
 using flyte.ui;
-using OpenTK.Graphics.OpenGL;
 using flyte.lyt._3ds;
 using static flyte.utils.Endian;
 using System.Text;
 using flyte.img.wii;
 using flyte.lyt.common;
+using System.Drawing;
 
 namespace flyte
 {
@@ -56,27 +56,6 @@ namespace flyte
                 ProcessData(dialog.FileName, null);
                 this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
             }
-        }
-
-        private void ViewControl_Paint(object sender, PaintEventArgs e)
-        {
-            viewControl.MakeCurrent();
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Begin(PrimitiveType.Quads);
-            GL.Vertex2(-0.5f, -0.5f);
-            GL.Vertex2(0.5f, -0.5f);
-            GL.Vertex2(0.5f, 0.5f);
-            GL.Vertex2(-0.5f, 0.5f);
-            GL.End();
-
-            viewControl.SwapBuffers();
-        }
-
-        private void ViewControl_Load(object sender, EventArgs e)
-        {
-            GL.Enable(EnableCap.DepthTest);
         }
 
         private void CloseFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -159,6 +138,8 @@ namespace flyte
                     break;
             }
 
+            string layoutType = "";
+
             // some files have their string table nullified, which makes the names obfuscated
             // I've only seen this in SARCs from MK7, but there's probably more
             if (mArchive != null)
@@ -225,10 +206,11 @@ namespace flyte
             if (selectedFile == null)
                 return false;
 
-            string layoutType = Path.GetExtension(selectedFile);
+            if (layoutType == "")
+                layoutType = Path.GetExtension(selectedFile);
 
             // now we have to init a layout reader
-            EndianBinaryReader layoutReader;
+            EndianBinaryReader layoutReader = null;
             byte[] data;
 
             switch (layoutType)
@@ -253,6 +235,8 @@ namespace flyte
                     MessageBox.Show("This format is not supported yet.");
                     break;
             }
+
+            layoutReader.Close();
 
             if (mMainLayout == null)
                 return false;
@@ -432,6 +416,33 @@ namespace flyte
             viewer.setImage(tpl.getImage());
             viewer.ShowDialog();
 
+        }
+
+        private void LayoutViewer_Paint(object sender, PaintEventArgs e)
+        {
+            /* todo -- drawing */
+        }
+
+        private void MaterialList_DoubleClick(object sender, EventArgs e)
+        {
+            if (mMainLayout == null)
+                return;
+
+            MaterialEditor editor = null;
+
+            switch (mMainLayout.getMaterials()[materialList.SelectedIndex].getType())
+            {
+                case MaterialBase.Type.Wii:
+                    lyt.wii.Material mat = (lyt.wii.Material)mMainLayout.getMaterials()[materialList.SelectedIndex];
+                    editor = new MaterialEditor(ref mat);
+                    break;
+                default:
+                    MessageBox.Show("Unsupported material format.");
+                    break;
+            }
+
+            if (editor != null)
+                editor.Show();
         }
     }
 }

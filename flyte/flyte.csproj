@@ -33,12 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -101,8 +95,8 @@
     <Compile Include="lyt\common\TXT1.cs" />
     <Compile Include="lyt\common\USD1.cs" />
     <Compile Include="lyt\common\WND1.cs" />
-    <Compile Include="lyt\gc\BLO.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
+    <Compile Include="lyt\MaterialBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
     <Compile Include="lyt\wii\BND1.cs" />
     <Compile Include="lyt\wii\BRLYT.cs" />
@@ -152,6 +146,12 @@
     <Compile Include="ui\LayoutChooser.Designer.cs">
       <DependentUpon>LayoutChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\wii\MaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\wii\MaterialEditor.Designer.cs">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="utils\Bit.cs" />
     <Compile Include="utils\Color.cs" />
     <Compile Include="utils\Coord.cs" />
@@ -174,8 +174,9 @@
     <EmbeddedResource Include="ui\LayoutChooser.resx">
       <DependentUpon>LayoutChooser.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
+    <EmbeddedResource Include="ui\wii\MaterialEditor.resx">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

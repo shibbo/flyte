@@ -92,7 +92,10 @@ namespace flyte.lyt.common
             if (version == 0x8030000)
                 reader.ReadUInt32(); // this might be something, but probably padding
 
-            mPerCharTransformOffset = reader.ReadUInt32();
+            if (version != 0x3030000)
+                mPerCharTransformOffset = reader.ReadUInt32();
+            else
+                mPerCharTransformOffset = 0;
 
             mMaterialName = materials.getMaterialNameFromIndex(mMaterialIndex);
             mFontName = fonts.getFontNameFromIndex(mFontIndex);

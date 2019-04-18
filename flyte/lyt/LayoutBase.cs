@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace flyte.lyt
 {
-    class LayoutBase
+    public class LayoutBase
     {
         public LayoutBase() { }
 
@@ -47,6 +47,7 @@ namespace flyte.lyt
         public virtual void addUserData(UserdataBase data) { }
         public virtual LayoutBase getLayoutParams() { return null; }
         public virtual List<string> getMaterialNames() { return null; }
+        public virtual List<MaterialBase> getMaterials() { return null; }
 
         List<LayoutBase> mChildren;
         LayoutBase mParent;

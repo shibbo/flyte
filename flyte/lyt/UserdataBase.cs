@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace flyte.lyt
 {
-    class UserdataBase
+    public class UserdataBase
     {
         public virtual void setUserData(UserdataBase data) { }
     }

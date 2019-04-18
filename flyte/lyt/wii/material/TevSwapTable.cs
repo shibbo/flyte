@@ -12,30 +12,70 @@
 
 using flyte.io;
 using System;
+using System.ComponentModel;
 
 namespace flyte.lyt.wii.material
 {
-    struct SwapMode
+    public class SwapMode
     {
+        public SwapMode(ref EndianBinaryReader reader)
+        {
+            byte val = reader.ReadByte();
+            r = (val >> 2) & 0x3;
+            g = (val >> 4) & 0x3;
+            b = (val >> 6) & 0x3;
+            a = (val >> 8) & 0x3;
+        }
+
         public int r;
         public int g;
         public int b;
         public int a;
+
+        [DisplayName("Red"), CategoryAttribute("General"), DescriptionAttribute("Red color.")]
+        public int Red
+        {
+            get { return r; }
+            set { r = value; }
+        }
+
+        [DisplayName("Green"), CategoryAttribute("General"), DescriptionAttribute("Green color.")]
+        public int Green
+        {
+            get { return g; }
+            set { g = value; }
+        }
+
+        [DisplayName("Blue"), CategoryAttribute("General"), DescriptionAttribute("Blue color.")]
+        public int Blue
+        {
+            get { return b; }
+            set { b = value; }
+        }
+
+        [DisplayName("Alpha"), CategoryAttribute("General"), DescriptionAttribute("Alpha color.")]
+        public int Alpha
+        {
+            get { return a; }
+            set { a = value; }
+        }
     }
-    class TevSwapTable
+    public class TevSwapTable
     {
         public TevSwapTable(ref EndianBinaryReader reader)
         {
             mSwapMode = new SwapMode[4];
 
             for (int i = 0; i < 4; i++)
-            {
-                byte val = reader.ReadByte();
-                mSwapMode[i].r = (val >> 2) & 0x3;
-                mSwapMode[i].g = (val >> 4) & 0x3;
-                mSwapMode[i].b = (val >> 6) & 0x3;
-                mSwapMode[i].a = (val >> 8) & 0x3;
-            }
+                mSwapMode[i] = new SwapMode(ref reader);
+        }
+
+        public SwapMode getSwapModeAtIndex(int idx)
+        {
+            if (idx < 4)
+                return mSwapMode[idx];
+            else
+                return null;
         }
 
         public void Write(ref EndianBinaryWriter writer)
