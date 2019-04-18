@@ -10,7 +10,7 @@ using static flyte.utils.Bit;
 
 namespace flyte.lyt.common
 {
-    class MAT1
+    public class MAT1 : LayoutBase
     {
         public MAT1(ref EndianBinaryReader reader, uint version)
         {
@@ -31,7 +31,7 @@ namespace flyte.lyt.common
             for (int i = 0; i < mMaterialCount; i++)
                 mSectionOffsets[i] = reader.ReadUInt32();
 
-            mMaterials = new List<Material>();
+            mMaterials = new List<MaterialBase>();
 
             foreach (int offset in mSectionOffsets)
             {
@@ -47,9 +47,9 @@ namespace flyte.lyt.common
             return mMaterials[idx].getName();
         }
 
-        public List<Material> getMaterials() { return mMaterials; }
+        public override List<MaterialBase> getMaterials() { return mMaterials; }
 
-        public List<string> getMaterialNames()
+        public override List<string> getMaterialNames()
         {
             List<string> strs = new List<string>();
 
@@ -64,13 +64,15 @@ namespace flyte.lyt.common
 
         uint[] mSectionOffsets;
 
-        List<Material> mMaterials;
+        List<MaterialBase> mMaterials;
     }
 
-    class Material
+    class Material : MaterialBase
     {
         public Material(ref EndianBinaryReader reader, uint version)
         {
+            base.setType(Type.WiiU_Switch);
+
             mName = reader.ReadString(0x1C).Replace("\0", "");
 
             // Switch BFLYT
@@ -141,7 +143,7 @@ namespace flyte.lyt.common
                 mFontShadowParam = new FontShadowParameter(ref reader);
         }
 
-        public string getName() { return mName; }
+        public override string getName() { return mName; }
 
         string mName;
         RGBAColor8 mBlackColor;

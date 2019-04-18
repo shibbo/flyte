@@ -12,7 +12,7 @@ namespace flyte.lyt
         {
             Wii = 0,
             _3DS = 1,
-            Switch =2
+            WiiU_Switch =2
         }
 
         public virtual string getName() { return mMaterialName; }

@@ -430,7 +430,12 @@ namespace flyte
 
             MaterialEditor editor = null;
 
-            switch (mMainLayout.getMaterials()[materialList.SelectedIndex].getType())
+            List<MaterialBase> mats = mMainLayout.getMaterials();
+
+            if (mats == null)
+                return;
+
+            switch (mats[materialList.SelectedIndex].getType())
             {
                 case MaterialBase.Type.Wii:
                     lyt.wii.Material mat = (lyt.wii.Material)mMainLayout.getMaterials()[materialList.SelectedIndex];

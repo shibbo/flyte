@@ -248,6 +248,7 @@ namespace flyte.lyt.common
 
         public override LayoutBase getLayoutParams() { return mLayoutParams; }
         public override LayoutBase getRootGroup() { return mRootGroup; }
+        public override List<MaterialBase> getMaterials() { return mMaterialList.getMaterials(); }
 
 
         ushort mBOM;

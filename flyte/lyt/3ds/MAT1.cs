@@ -10,7 +10,7 @@ using static flyte.utils.Bit;
 
 namespace flyte.lyt._3ds
 {
-    class MAT1
+    class MAT1 : LayoutBase
     {
         public MAT1(ref EndianBinaryReader reader)
         {
@@ -24,7 +24,7 @@ namespace flyte.lyt._3ds
             for (int i = 0; i < mMaterialCount; i++)
                 mSectionOffsets[i] = reader.ReadUInt32();
 
-            mMaterials = new List<Material>();
+            mMaterials = new List<MaterialBase>();
 
             foreach(int offset in mSectionOffsets)
             {
@@ -40,9 +40,12 @@ namespace flyte.lyt._3ds
             return mMaterials[idx].getName();
         }
 
-        public List<Material> getMaterials() { return mMaterials; }
+        public override List<MaterialBase> getMaterials()
+        {
+            return mMaterials;
+        }
 
-        public List<string> getMaterialNames()
+        public override List<string> getMaterialNames()
         {
             List<string> strs = new List<string>();
 
@@ -57,13 +60,15 @@ namespace flyte.lyt._3ds
 
         uint[] mSectionOffsets;
 
-        List<Material> mMaterials;
+        List<MaterialBase> mMaterials;
     }
 
-    class Material
+    class Material : MaterialBase
     {
         public Material(ref EndianBinaryReader reader)
         {
+            base.setType(Type._3DS);
+
             mName = reader.ReadString(0x14).Replace("\0", "");
             mTevColor = reader.ReadRGBAColor8();
 
@@ -123,8 +128,6 @@ namespace flyte.lyt._3ds
             if (mHasFontShadowParam)
                 mFontShadowParam = new FontShadowParameter(ref reader);
         }
-
-        public string getName() { return mName; }
 
         string mName;
         RGBAColor8 mTevColor;
