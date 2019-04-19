@@ -129,6 +129,8 @@ namespace flyte.lyt._3ds
                 mFontShadowParam = new FontShadowParameter(ref reader);
         }
 
+        public override string getName() { return mName; }
+
         string mName;
         RGBAColor8 mTevColor;
         RGBAColor8[] mTevConstantColors;

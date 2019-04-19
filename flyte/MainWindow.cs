@@ -191,6 +191,9 @@ namespace flyte
             mLayoutImages = mArchive.getLayoutImages();
             mLayoutControls = mArchive.getLayoutControls();
 
+            if (mLayoutImages.Count > 0)
+                imageToolStripMenuItem.Enabled = true;
+
             if (mLayoutFiles.Count == 0)
             {
                 MessageBox.Show("This file contains no layouts.");
@@ -324,6 +327,7 @@ namespace flyte
             panelList.SelectedNode = null;
             layoutPropertyGrid.SelectedObject = null;
             mainPropertyGrid.SelectedObject = null;
+            imageToolStripMenuItem.Enabled = false;
             panelList.Nodes.Clear();
             texturesList.Items.Clear();
             fontsList.Items.Clear();
@@ -414,7 +418,7 @@ namespace flyte
                 return;
 
             viewer.setImage(tpl.getImage());
-            viewer.ShowDialog();
+            viewer.Show();
 
         }
 

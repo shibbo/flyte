@@ -79,8 +79,6 @@ namespace flyte.archive.wii
                     string name = reader.ReadStringNTFrom(dir.getStringOffset() + strTableOffs);
                     dir.setName(name);
 
-                    Console.WriteLine("Wrote " + name);
-
                     byte[] data = reader.ReadBytesFrom(dir.getDataOffset() + mFileDataOffset, (int)dir.getDataLength());
                     dir.setData(data);
                 }
