@@ -173,7 +173,7 @@ namespace flyte.img.wii
             if (mOutImg == null)
                 return null;
 
-            var outBMP = new Bitmap(mHeight, mWidth);
+            var outBMP = new Bitmap(mWidth, mHeight);
             var img = outBMP.LockBits(new Rectangle(0, 0, outBMP.Width, outBMP.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             Marshal.Copy(mOutImg, 0, img.Scan0, mOutImg.Length);
             outBMP.UnlockBits(img);
@@ -317,6 +317,9 @@ namespace flyte.img.wii
                         {
                             byte val = reader.ReadByte();
 
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
+
                             int output = (((blockY + y) * width) + (blockX + x));
                             // 4 bits greyscale, 4 bits alpha
                             image[output++] = (byte)((val & 0xF0) | (val >> 4));
@@ -343,6 +346,9 @@ namespace flyte.img.wii
                         {
                             byte val = reader.ReadByte();
 
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
+
                             int output = (((blockY + y) * width) + (blockX + x));
                             image[output] = val;
                         }
@@ -366,6 +372,9 @@ namespace flyte.img.wii
                         for (int x = 0; x < 8; x++)
                         {
                             byte val = reader.ReadByte();
+
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
 
                             int output = (((blockY + y) * width) + (blockX + x)) * 2;
                             image[output++] = (byte)((val << 4) | (val & 0xF));
@@ -393,6 +402,9 @@ namespace flyte.img.wii
                             byte alpha = reader.ReadByte();
                             byte val = reader.ReadByte();
 
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
+
                             int output = (((blockY + y) * width) + (blockX + x)) * 2;
                             image[output++] = val;
                             image[output] = alpha;
@@ -417,6 +429,9 @@ namespace flyte.img.wii
                         for (int x = 0; x < 4; x++)
                         {
                             ushort val = reader.ReadUInt16();
+
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
 
                             // now we figure out our position
                             int output = (((blockY + y) * width) + (blockX + x)) * 4;
@@ -449,6 +464,10 @@ namespace flyte.img.wii
                             byte r, g, b, a;
 
                             ushort val = reader.ReadUInt16();
+
+                            if (blockX + x >= width || blockY + y >= height)
+                                continue;
+
                             int output = (((blockY + y) * width) + (blockX + x)) * 4;
 
                             // does this have alpha?
