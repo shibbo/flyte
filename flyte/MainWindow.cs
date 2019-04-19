@@ -28,6 +28,7 @@ using System.Text;
 using flyte.img.wii;
 using flyte.lyt.common;
 using System.Drawing;
+using flyte.img;
 
 namespace flyte
 {
@@ -191,9 +192,6 @@ namespace flyte
             mLayoutImages = mArchive.getLayoutImages();
             mLayoutControls = mArchive.getLayoutControls();
 
-            if (mLayoutImages.Count > 0)
-                imageToolStripMenuItem.Enabled = true;
-
             if (mLayoutFiles.Count == 0)
             {
                 MessageBox.Show("This file contains no layouts.");
@@ -208,6 +206,14 @@ namespace flyte
 
             if (selectedFile == null)
                 return false;
+
+            string[] sections = selectedFile.Split('/');
+            mMainRoot = "";
+
+            // remove "lyt" part and the file name
+            // this will be our main root of the entire opened file
+            for (int i = 0; i < sections.Length - 2; i++)
+                mMainRoot += sections[i] + "/";
 
             if (layoutType == "")
                 layoutType = Path.GetExtension(selectedFile);
@@ -327,7 +333,6 @@ namespace flyte
             panelList.SelectedNode = null;
             layoutPropertyGrid.SelectedObject = null;
             mainPropertyGrid.SelectedObject = null;
-            imageToolStripMenuItem.Enabled = false;
             panelList.Nodes.Clear();
             texturesList.Items.Clear();
             fontsList.Items.Clear();
@@ -373,6 +378,7 @@ namespace flyte
         Dictionary<string, byte[]> mLayoutControls;
 
         LayoutBase mMainLayout;
+        string mMainRoot;
 
         private void LoadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -397,29 +403,6 @@ namespace flyte
            {
                 layoutPropertyGrid.SelectedObject = panelList.SelectedNode.Tag;     
            }
-        }
-
-        private void ImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            LayoutChooser chooser = new LayoutChooser();
-            chooser.insertEntries(new List<string>(mLayoutImages.Keys));
-            chooser.ShowDialog();
-
-            string selectedImage = chooser.getSelectedFile();
-
-            byte[] data = mLayoutImages[selectedImage];
-
-            EndianBinaryReader reader = new EndianBinaryReader(data);
-            TPL tpl = new TPL(ref reader);
-
-            ImageViewer viewer = new ImageViewer();
-
-            if (tpl.getImage() == null)
-                return;
-
-            viewer.setImage(tpl.getImage());
-            viewer.Show();
-
         }
 
         private void LayoutViewer_Paint(object sender, PaintEventArgs e)
@@ -456,7 +439,30 @@ namespace flyte
 
         private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            /* todo -- double click for images */
+            string a = mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem);
+            byte[] data = mArchive.getLayoutImages()[mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem)];
+
+            EndianBinaryReader reader = new EndianBinaryReader(data);
+
+            ImageContainerBase container = null;
+
+            switch (Path.GetExtension(texturesList.GetItemText(texturesList.SelectedItem)))
+            {
+                case ".tpl":
+                    container = new TPL(ref reader);
+                    break;
+                default:
+                    MessageBox.Show("This image format does not support viewing yet.");
+                    break;
+            }
+
+            if (container == null)
+                return;
+
+            ImageViewer viewer = new ImageViewer();
+
+            viewer.setImage(container.getImage(0));
+            viewer.Show();
         }
     }
 }

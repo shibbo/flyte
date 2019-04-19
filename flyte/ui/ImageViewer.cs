@@ -1,4 +1,5 @@
-﻿using System;
+﻿using flyte.img;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,9 +18,10 @@ namespace flyte.ui
             InitializeComponent();
         }
 
-        public void setImage(Bitmap img)
+        public void setImage(ImageBase image)
         {
-            pictureBox1.Image = img;
+            imageBox.Image = image.getImageBitmap();
+            imageGrid.SelectedObject = image;
         }
     }
 }

@@ -50,6 +50,7 @@
     <Compile Include="archive\ArchiveBase.cs" />
     <Compile Include="archive\LH.cs" />
     <Compile Include="archive\LZ77.cs" />
+    <Compile Include="img\ImageBase.cs" />
     <Compile Include="img\wii\TPL.cs" />
     <Compile Include="io\EndianBinaryWriter.cs" />
     <Compile Include="lan\wii\BRLAN.cs" />

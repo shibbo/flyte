@@ -13,6 +13,7 @@
 using flyte.io;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace flyte.archive.wii
 {
@@ -53,7 +54,7 @@ namespace flyte.archive.wii
             // grab our string table position
             long strTablePos = reader.Pos();
             // and we need to keep track of our current index to properly assign directory names
-            int curIdx = 0;
+            int curIdx = 1;
             mStringTable = new List<string>(nodeCount);
             // set our root node string since it's not a part of the list
             mRootNode.setString(reader.ReadStringNTFrom(strTablePos + mRootNode.getStringPoolIdx()));
@@ -104,7 +105,7 @@ namespace flyte.archive.wii
         /// </summary>
         /// <param name="name">The file name to get data from.</param>
         /// <returns>The data in a byte array. NULL if the file was not found.</returns>
-        public byte[] getDataByName(string name)
+        public override byte[] getDataByName(string name)
         {
             foreach (ArchiveNode node in mNodes)
             {

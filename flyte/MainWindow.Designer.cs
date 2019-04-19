@@ -39,7 +39,6 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelList = new System.Windows.Forms.TreeView();
             this.mainTabControl = new System.Windows.Forms.TabControl();
             this.layoutPage = new System.Windows.Forms.TabPage();
@@ -138,10 +137,9 @@
             // 
             this.loadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadAnimationToolStripMenuItem,
-            this.controlToolStripMenuItem,
-            this.imageToolStripMenuItem});
+            this.controlToolStripMenuItem});
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadToolStripMenuItem.Text = "Load";
             // 
             // loadAnimationToolStripMenuItem
@@ -157,14 +155,6 @@
             this.controlToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.controlToolStripMenuItem.Text = "Control";
             this.controlToolStripMenuItem.Click += new System.EventHandler(this.ControlToolStripMenuItem_Click);
-            // 
-            // imageToolStripMenuItem
-            // 
-            this.imageToolStripMenuItem.Enabled = false;
-            this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
-            this.imageToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
-            this.imageToolStripMenuItem.Text = "Image";
-            this.imageToolStripMenuItem.Click += new System.EventHandler(this.ImageToolStripMenuItem_Click);
             // 
             // panelList
             // 
@@ -443,7 +433,6 @@
         private System.Windows.Forms.ToolStrip materialsToolStrip;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ListBox materialList;
-        private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStrip elementActionsToolStrip;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton3;

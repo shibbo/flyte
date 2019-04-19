@@ -28,34 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.imageBox = new System.Windows.Forms.PictureBox();
+            this.imageGrid = new System.Windows.Forms.PropertyGrid();
+            ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // imageBox
             // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(800, 450);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.imageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageBox.Location = new System.Drawing.Point(264, 0);
+            this.imageBox.Name = "imageBox";
+            this.imageBox.Size = new System.Drawing.Size(536, 448);
+            this.imageBox.TabIndex = 0;
+            this.imageBox.TabStop = false;
+            // 
+            // imageGrid
+            // 
+            this.imageGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.imageGrid.Location = new System.Drawing.Point(0, 0);
+            this.imageGrid.Name = "imageGrid";
+            this.imageGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.imageGrid.Size = new System.Drawing.Size(258, 448);
+            this.imageGrid.TabIndex = 1;
+            this.imageGrid.ToolbarVisible = false;
             // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.pictureBox1);
+            this.ClientSize = new System.Drawing.Size(800, 448);
+            this.Controls.Add(this.imageGrid);
+            this.Controls.Add(this.imageBox);
             this.Name = "ImageViewer";
-            this.Text = "ImageViewer";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.Text = "Image Viewer";
+            ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox imageBox;
+        private System.Windows.Forms.PropertyGrid imageGrid;
     }
 }

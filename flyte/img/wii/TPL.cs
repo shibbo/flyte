@@ -15,12 +15,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 using flyte.io;
 using static flyte.utils.Endian;
 
 namespace flyte.img.wii
 {
-    class TPL
+    class TPL : ImageContainerBase
     {
         public TPL(ref EndianBinaryReader reader)
         {
@@ -40,7 +41,7 @@ namespace flyte.img.wii
                 mImageOffsets.Add(offs);
             }
 
-            mImages = new List<TPLImage>();
+            mImages = new List<ImageBase>();
             mPalettes = new List<Palette>();
 
             foreach (ImageOffset offset in mImageOffsets)
@@ -58,11 +59,20 @@ namespace flyte.img.wii
                 }
             }
         }
-
-        public Bitmap getImage()
+        
+        /// <summary>
+        /// Gets an image from the image list and returns the Bitmap.
+        /// </summary>
+        /// <param name="imageIndex">The index of the image to return.</param>
+        /// <returns>A bitmap representation of the image.</returns>
+        public Bitmap getImageBitmap(int imageIndex)
         {
-            // shrug lol
-            return mImages[0].getImage();
+            return mImages[imageIndex].getImageBitmap();
+        }
+
+        public override ImageBase getImage(int imageIndex)
+        {
+            return mImages[imageIndex];
         }
 
         uint mIdentifier;
@@ -70,7 +80,7 @@ namespace flyte.img.wii
         uint mImageTableOffset;
 
         List<ImageOffset> mImageOffsets;
-        List<TPLImage> mImages;
+        List<ImageBase> mImages;
         List<Palette> mPalettes;
     }
 
@@ -80,9 +90,8 @@ namespace flyte.img.wii
         public uint mPaletteHeader;
     }
 
-    class TPLImage
+    class TPLImage : ImageBase
     {
-
         public enum ImageFormat
         {
             I4 = 0x0,
@@ -100,6 +109,8 @@ namespace flyte.img.wii
 
         public TPLImage(ref EndianBinaryReader reader)
         {
+            base.setType(ImagePlatform.Wii);
+
             mHeight = reader.ReadUInt16();
             mWidth = reader.ReadUInt16();
             mFormat = (ImageFormat)reader.ReadUInt32();
@@ -120,6 +131,12 @@ namespace flyte.img.wii
             bool unsupported = false;
 
             Console.WriteLine("Format: " + mFormat);
+
+            if (mWidth % 4 != 0)
+                mWidth += (ushort)(4 - (mWidth % 4));
+
+            if (mHeight % 4 != 0)
+                mHeight += (ushort)(4 - (mHeight % 4));
 
             switch (mFormat)
             {
@@ -151,7 +168,7 @@ namespace flyte.img.wii
                 return;
         }
 
-        public Bitmap getImage()
+        public override Bitmap getImageBitmap()
         {
             if (mOutImg == null)
                 return null;
@@ -179,6 +196,83 @@ namespace flyte.img.wii
         byte mUnpacked;
 
         byte[] mOutImg;
+
+        [DisplayName("Format"), CategoryAttribute("General"), DescriptionAttribute("The image format.")]
+        public ImageFormat Format
+        {
+            get { return mFormat; }
+            set { mFormat = value; }
+        }
+
+        [DisplayName("Height"), CategoryAttribute("Size"), DescriptionAttribute("The height of the image.")]
+        public ushort Height
+        {
+            get { return mHeight; }
+            set { mHeight = value; }
+        }
+
+        [DisplayName("Width"), CategoryAttribute("Size"), DescriptionAttribute("The width of the image.")]
+        public ushort Width
+        {
+            get { return mWidth; }
+            set { mWidth = value; }
+        }
+
+        [DisplayName("Min Filter"), CategoryAttribute("Filter"), DescriptionAttribute("Min filter.")]
+        public uint MinFilter
+        {
+            get { return mMinFilter; }
+            set { mMinFilter = value; }
+        }
+
+        [DisplayName("Mag Filter"), CategoryAttribute("Filter"), DescriptionAttribute("Mag filter.")]
+        public uint MagFilter
+        {
+            get { return mMagFilter; }
+            set { mMagFilter = value; }
+        }
+
+        [DisplayName("Minimum LOD"), CategoryAttribute("LOD"), DescriptionAttribute("Minimum LOD.")]
+        public byte MinLOD
+        {
+            get { return mMinLOD; }
+            set { mMinLOD = value; }
+        }
+
+        [DisplayName("Maximum LOD"), CategoryAttribute("LOD"), DescriptionAttribute("Maximum LOD.")]
+        public byte MaxLOD
+        {
+            get { return mMaxLOD; }
+            set { mMaxLOD = value; }
+        }
+
+        [DisplayName("LOD Bias"), CategoryAttribute("LOD"), DescriptionAttribute("LOD Bias.")]
+        public float LODBias
+        {
+            get { return mLODBias; }
+            set { mLODBias = value; }
+        }
+
+        [DisplayName("Edge LOD Enabled"), CategoryAttribute("LOD"), DescriptionAttribute("Edge LOD.")]
+        public byte EdgeLODEnabled
+        {
+            get { return mEdgeLODEnable; }
+            set { mEdgeLODEnable = value; }
+        }
+
+        [DisplayName("Wrap S"), CategoryAttribute("Wrap"), DescriptionAttribute("Wrap S.")]
+        public uint WrapS
+        {
+            get { return mWrapS; }
+            set { mWrapS = value; }
+        }
+
+        [DisplayName("Wrap T"), CategoryAttribute("Wrap"), DescriptionAttribute("Wrap T.")]
+        public uint WrapT
+        {
+            get { return mWrapT; }
+            set { mWrapT = value; }
+        }
     }
 
     class Palette
