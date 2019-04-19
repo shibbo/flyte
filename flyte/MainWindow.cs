@@ -453,5 +453,10 @@ namespace flyte
             if (editor != null)
                 editor.Show();
         }
+
+        private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /* todo -- double click for images */
+        }
     }
 }
