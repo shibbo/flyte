@@ -10,327 +10,214 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
-using flyte.io;
-using System;
 using System.Collections.Generic;
+using flyte.io;
 
 namespace flyte.archive.wii
 {
-    /// <summary>
-    /// Represents a RARC archive.
-    /// </summary>
-    class RARC : ArchiveBase
+    public class RARC : ArchiveBase
     {
-        /// <summary>
-        /// Constructs a representation of a RARC archive.
-        /// </summary>
-        /// <param name="reader">The stream to read the data.</param>
         public RARC(ref EndianBinaryReader reader) : base(ArchiveType.RARC)
         {
-            // header
-            if (reader.ReadString(4) != "RARC")
-            {
-                Console.WriteLine("Bad header. Expected RARC.");
-                return;
-            }
+            uint magic = reader.ReadUInt32();
 
-            mFileLength = reader.ReadUInt32();
-            mHeaderLength = reader.ReadUInt32();
+            if (magic != 0x52415243)
+                return;
+
+            // we just skip everything we don't need for packing
+            reader.Seek(0xC);
+
             mFileDataOffset = reader.ReadUInt32() + 0x20;
-            mFileDataLength = reader.ReadUInt32();
-            mUnk14 = reader.ReadUInt32();
-            mUnk18 = reader.ReadUInt32();
-            mUnk1C = reader.ReadUInt32();
+            reader.Seek(0x20);
+            mNumDirNodes = reader.ReadUInt32();
+            mDirNodesOffset = reader.ReadUInt32() + 0x20;
+            reader.ReadUInt32();
+            mFileEntriesOffset = reader.ReadUInt32() + 0x20;
+            reader.ReadUInt32();
+            mStringTableOffset = reader.ReadUInt32() + 0x20;
 
-            // info block
-            mInfoBlock = new RARCInfoBlock(ref reader);
+            mDirEntries = new Dictionary<uint, DirectoryEntry>();
+            mFileEntries = new Dictionary<uint, FileEntry>();
 
-            mNodes = new List<RARCNode>();
+            DirectoryEntry root = new DirectoryEntry();
+            root.ID = 0;
+            root.ParentDir = 0xFFFFFFFF;
 
-            for (int i = 0; i < mInfoBlock.getNumNodes(); i++)
+            reader.Seek(mDirNodesOffset + 0x6);
+
+            ushort stringOffset = reader.ReadUInt16();
+            root.Name = reader.ReadStringNTFrom(stringOffset + mStringTableOffset);
+            root.FullName = "/" + root.Name;
+
+            mDirEntries.Add(0, root);
+
+            for (uint i = 0; i < mNumDirNodes; i++)
             {
-                RARCNode node = new RARCNode(ref reader);
-                mNodes.Add(node);
-            }
+                DirectoryEntry parentDir = mDirEntries[i];
 
-            mDirectories = new List<RARCDirectory>();
+                reader.Seek(mDirNodesOffset + (i * 0x10) + 10);
 
-            for (int i = 0; i < mInfoBlock.getNumDirs(); i++)
-            {
-                RARCDirectory dir = new RARCDirectory(ref reader);
-                mDirectories.Add(dir);
-            }
+                ushort numEntries = reader.ReadUInt16();
+                uint firstIdx = reader.ReadUInt32();
 
-            uint strTableOffs = mInfoBlock.getStrTableOffset();
-            
-            // now that we have all the info we need, we can assign the strings to our nodes
-            foreach(RARCNode node in mNodes)
-            {
-                string name = reader.ReadStringNTFrom(node.getNameOffset() + strTableOffs);
-                node.setName(name);
-            }
-
-            // now we do it for the files as well, and take care of their file data
-            foreach (RARCDirectory dir in mDirectories)
-            {
-                // make sure its a file
-                if (dir.getDataLength() != 0)
+                for (uint j = 0; j < numEntries; j++)
                 {
-                    string name = reader.ReadStringNTFrom(dir.getStringOffset() + strTableOffs);
-                    dir.setName(name);
+                    uint entryoffset = mFileEntriesOffset + ((j + firstIdx) * 0x14);
+                    reader.Seek(entryoffset);
 
-                    byte[] data = reader.ReadBytesFrom(dir.getDataOffset() + mFileDataOffset, (int)dir.getDataLength());
-                    dir.setData(data);
+                    uint fileid = reader.ReadUInt16();
+                    reader.ReadBytes(0x4);
+                    uint nameOffset = reader.ReadUInt16();
+                    uint dataOffset = reader.ReadUInt32();
+                    uint dataSize = reader.ReadUInt32();
+
+                    string name = reader.ReadStringNTFrom(mStringTableOffset + nameOffset);
+
+                    // root stuff
+                    if (name == "." || name == "..")
+                        continue;
+
+                    string fullName = parentDir.FullName + "/" + name;
+
+                    if (fileid == 0xFFFF)
+                    {
+                        DirectoryEntry dir = new DirectoryEntry
+                        {
+                            EntryOffset = entryoffset,
+                            ID = dataOffset,
+                            ParentDir = i,
+                            NameOffset = nameOffset,
+                            Name = name,
+                            FullName = fullName
+                        };
+
+                        mDirEntries.Add(dataOffset, dir);
+                    }
+                    else
+                    {
+                        FileEntry file = new FileEntry
+                        {
+                            EntryOffset = entryoffset,
+                            ID = fileid,
+                            ParentDir = i,
+                            NameOffset = nameOffset,
+                            DataOffset = dataOffset,
+                            DataSize = dataSize,
+                            Name = name,
+                            FullName = fullName
+                        };
+
+                        // now we add our file data
+                        file.Data = reader.ReadBytesFrom(dataOffset + mFileDataOffset, (int)dataSize);
+
+                        mFileEntries.Add(fileid, file);
+                    }
                 }
             }
-
-            uint curIdx = 0;
-            // now that we have both finished, we can assign directory names to file nodes
-            foreach(RARCNode node in mNodes)
-            {
-                curIdx = node.mFirstDirIndex;
-
-                while (curIdx < node.mNumDirectories + node.mFirstDirIndex)
-                {
-                    setName((int)curIdx, node.getName());
-                    curIdx++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the data from a defined file name.
-        /// </summary>
-        /// <param name="name">The file name to find the data for.</param>
-        /// <returns>The file data. NULL if the file was not found.</returns>
-        public override byte[] getDataByName(string name)
-        {
-            foreach (RARCDirectory dir in mDirectories)
-            {
-                if (dir.getType() == 0x1100)
-                {
-                    if (dir.getName() == name)
-                        return dir.getData();
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Set a node's name, with a directory name prepended.
-        /// </summary>
-        /// <param name="idx">The file index.</param>
-        /// <param name="name">The directory name.</param>
-        public void setName(int idx, string name)
-        {
-            RARCDirectory curDir = mDirectories[idx];
-
-            // directories dont get this special treatment
-            if (curDir.getType() != 0x1100)
-                return;
-
-            curDir.setName(name + "/" + curDir.getName());
-            mDirectories[idx] = curDir;
-        }
-
-        public override List<string> getFileNames()
-        {
-            List<string> names = new List<string>();
-
-            foreach (RARCDirectory dir in mDirectories)
-            {
-                if (dir.getName() != null)
-                    names.Add(dir.getName());
-            }
-
-            return names;
         }
 
         public override Dictionary<string, byte[]> getLayoutFiles()
         {
-            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
 
-            foreach (RARCDirectory dir in mDirectories)
+            foreach(KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                if (dir.getType() != 0x1100)
-                    continue;
-
-                if (dir.getName().Contains(".brlyt"))
-                    dict.Add(dir.getName(), dir.getData());
+                if (pair.Value.Name.Contains(".brlyt") | pair.Value.Name.Contains(".blo"))
+                    files.Add(pair.Value.FullName, pair.Value.Data);
             }
 
-            return dict;
+            return files;
         }
 
         public override Dictionary<string, byte[]> getLayoutAnimations()
         {
-            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
 
-            foreach (RARCDirectory dir in mDirectories)
+            foreach (KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                if (dir.getType() != 0x1100)
-                    continue;
-
-                if (dir.getName().Contains(".brlan"))
-                    dict.Add(dir.getName(), dir.getData());
+                if (pair.Value.Name.Contains(".brlan"))
+                    files.Add(pair.Value.FullName, pair.Value.Data);
             }
 
-            return dict;
+            return files;
         }
 
         public override Dictionary<string, byte[]> getLayoutImages()
         {
-            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+            Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
 
-            foreach (RARCDirectory dir in mDirectories)
+            foreach (KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                if (dir.getType() != 0x1100)
-                    continue;
-
-                if (dir.getName().Contains(".tpl"))
-                    dict.Add(dir.getName(), dir.getData());
+                if (pair.Value.Name.Contains(".tpl"))
+                    files.Add(pair.Value.FullName, pair.Value.Data);
             }
 
-            return dict;
+            return files;
         }
 
-        public override Dictionary<string, byte[]> getLayoutControls()
+        public override byte[] getDataByName(string name)
         {
-            Dictionary<string, byte[]> dict = new Dictionary<string, byte[]>();
+            byte[] ret = null;
 
-            foreach (RARCDirectory dir in mDirectories)
+            foreach (KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                if (dir.getType() != 0x1100)
-                    continue;
-
-                if (dir.getName().Contains(".brctr"))
-                    dict.Add(dir.getName(), dir.getData());
+                if (pair.Value.FullName == name)
+                    return pair.Value.Data;
             }
 
-            return dict;
+            return ret;
         }
 
         public override List<string> getArchiveFileNames()
         {
             List<string> strs = new List<string>();
 
-            string[] exts = { ".arc", ".lyarc", ".sarc", ".pack", ".szs" };
 
-            foreach (RARCNode dir in mNodes)
+            foreach (KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                for (int i = 0; i < exts.Length; i++)
-                {
-                    if (dir.getName().Contains(exts[i]))
-                        strs.Add(dir.getName());
-                }
+                if (pair.Value.Name.Contains(".arc"))
+                    strs.Add(pair.Value.FullName);
             }
 
             return strs;
         }
 
-        uint mFileLength;
-        uint mHeaderLength;
+        private class FileEntry
+        {
+            public uint EntryOffset;
+
+            public uint ID;
+            public uint NameOffset;
+            public uint DataOffset;
+            public uint DataSize;
+
+            public uint ParentDir;
+
+            public string Name;
+            public string FullName;
+            public byte[] Data;
+        }
+
+        private class DirectoryEntry
+        {
+            public uint EntryOffset;
+
+            public uint ID;
+            public uint NameOffset;
+
+            public uint ParentDir;
+
+            public string Name;
+            public string FullName;
+        }
+
         uint mFileDataOffset;
-        uint mFileDataLength;
-        uint mUnk14;
-        uint mUnk18;
-        uint mUnk1C;
+        uint mNumDirNodes;
+        uint mDirNodesOffset;
+        uint mFileEntriesOffset;
+        uint mStringTableOffset;
 
-        RARCInfoBlock mInfoBlock;
-
-        List<RARCNode> mNodes;
-        List<RARCDirectory> mDirectories;
-    }
-    
-    class RARCInfoBlock
-    {
-        public RARCInfoBlock(ref EndianBinaryReader reader)
-        {
-            long startPos = reader.Pos();
-
-            mNumNodes = reader.ReadUInt32();
-            mFirstNodeOffset = reader.ReadUInt32();
-            mNumDirs = reader.ReadUInt32();
-            mFirstDirOffset = reader.ReadUInt32();
-            mStrTableLength = reader.ReadUInt32();
-            mStrTableOffset = reader.ReadUInt32() + (uint)startPos;
-            mNumDirsThatAreFiles = reader.ReadUInt16();
-            mUnk18 = reader.ReadInt16();
-            mUnk1C = reader.ReadUInt32();
-        }
-
-        public uint getNumNodes() { return mNumNodes; }
-        public uint getNumDirs() { return mNumDirs; }
-        public uint getStrTableOffset() { return mStrTableOffset; }
-
-        uint mNumNodes;
-        uint mFirstNodeOffset;
-        uint mNumDirs;
-        uint mFirstDirOffset;
-        uint mStrTableLength;
-        uint mStrTableOffset;
-        ushort mNumDirsThatAreFiles;
-        short mUnk18;
-        uint mUnk1C;
-    }
-
-    class RARCNode
-    {
-        public RARCNode(ref EndianBinaryReader reader)
-        {
-            mIdentifier = reader.ReadString(4).Replace(" ", "");
-            mNameOffset = reader.ReadUInt32();
-            mHash = reader.ReadUInt16();
-            mNumDirectories = reader.ReadUInt16();
-            mFirstDirIndex = reader.ReadUInt32();
-        }
-
-        public string getName() { return mName; }
-        public uint getNameOffset() { return mNameOffset; }
-        public void setName(string name) { mName = name; }
-
-        string mIdentifier;
-        uint mNameOffset;
-        ushort mHash;
-        public ushort mNumDirectories;
-        public uint mFirstDirIndex;
-
-        string mName;
-    }
-
-    class RARCDirectory
-    {
-        public RARCDirectory(ref EndianBinaryReader reader)
-        {
-            mDirIndex = reader.ReadInt16();
-            mHash = reader.ReadUInt16();
-            mType = reader.ReadUInt16();
-            mStrTableOffset = reader.ReadUInt16();
-            mFileDataOffset = reader.ReadUInt32();
-            mFileDataLength = reader.ReadUInt32();
-            mUnk10 = reader.ReadUInt32();
-        }
-
-        public uint getDataOffset() { return mFileDataOffset; }
-        public uint getDataLength() { return mFileDataLength; }
-        public byte[] getData() { return mData; }
-        public string getName() { return mName; }
-        public ushort getStringOffset() { return mStrTableOffset; }
-        public ushort getType() { return mType; }
-        public bool isDirectory() { return mType != 0x1100; }
-        public void setData(byte[] data) { mData = data; }
-        public void setName(string name) { mName = name; }
-
-        short mDirIndex;
-        ushort mHash;
-        ushort mType;
-        ushort mStrTableOffset;
-        uint mFileDataOffset;
-        uint mFileDataLength;
-        uint mUnk10;
-
-        string mName;
-        byte[] mData;
+        private Dictionary<uint, FileEntry> mFileEntries;
+        private Dictionary<uint, DirectoryEntry> mDirEntries;
     }
 }
