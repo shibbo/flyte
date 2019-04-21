@@ -1,0 +1,40 @@
+configuration: Release
+
+version: 1.0.{build}
+environment:
+  name: flyte
+build:
+  project: flyte.sln
+  verbosity: minimal
+deploy:
+- provider: GitHub
+  tag: EXPERIMENTAL
+  description: 'This is the latest build of the tool automatically built from the latest commit!\n\nMessage: $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\n Timestamp: $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
+  release: Experimental Release
+  auth_token:
+    secure: vDPwgMnjU54ZBjDmIfPNaES/JfhJBkj1yZ1kZwNf3ls8IUjPhVEWR2FDBVV0MySO
+  artifact: Switch-Toolbox-Latest.zip
+  draft: false
+  prerelease: true
+  force_update: true
+  
+after_build:
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Toolbox.exe"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Toolbox.exe.config"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Toolbox.pdb"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Lib"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Updater.exe"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Updater.pdb"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Updater.exe.config"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Shader"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Assimp32.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\libzstd.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\LZ4.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Gl_EditorFramework.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Switch_Toolbox.Library.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\System.Buffers.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\System.Memory.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Octokit.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\System.Runtime.CompilerServices.Unsafe.dll"
+  - 7z a "Switch-Toolbox-Latest.zip" "%APPVEYOR_BUILD_FOLDER%\Toolbox\bin\Release\Version.txt"
+  - appveyor PushArtifact "Switch-Toolbox-Latest.zip"
