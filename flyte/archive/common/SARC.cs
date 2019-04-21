@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using flyte.io;
 using System.Linq;
 using static flyte.utils.Endian;
+using static flyte.utils.Hash;
 
 namespace flyte.archive.common
 {
@@ -92,12 +93,21 @@ namespace flyte.archive.common
             {
                 if (mFileNameTable.isObfuscated())
                 {
-                    // this is me being nice
-                    if (pair.Value[0] == 'C' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
-                        files.Add(pair.Key + ".bclyt", pair.Value);
+                    // attempt to see if we have the de-obfuscated string
+                    uint hash = uint.Parse(pair.Key.Replace("hash_", ""), System.Globalization.NumberStyles.HexNumber);
+                    string deobfus = GetStringFromHash(hash);
 
-                    if (pair.Value[0] == 'F' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
-                        files.Add(pair.Key + ".bflyt", pair.Value);
+                    if (deobfus != "")
+                        files.Add(deobfus, pair.Value);
+                    else
+                    {
+                        // this is me being nice
+                        if (pair.Value[0] == 'C' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
+                            files.Add(pair.Key + ".bclyt", pair.Value);
+
+                        if (pair.Value[0] == 'F' && pair.Value[1] == 'L' && pair.Value[2] == 'Y' && pair.Value[3] == 'T')
+                            files.Add(pair.Key + ".bflyt", pair.Value);
+                    }
                 }
                 else
                 {

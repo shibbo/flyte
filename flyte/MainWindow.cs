@@ -24,10 +24,10 @@ using flyte.lyt.wii;
 using flyte.ui;
 using flyte.lyt._3ds;
 using static flyte.utils.Endian;
+using static flyte.utils.Hash;
 using System.Text;
 using flyte.img.wii;
 using flyte.lyt.common;
-using System.Drawing;
 using flyte.img;
 
 namespace flyte
@@ -37,6 +37,7 @@ namespace flyte
         public MainWindow()
         {
             InitializeComponent();
+            InitHashList();
             layoutPropertyGrid.PropertySort = PropertySort.Categorized;
             mainPropertyGrid.PropertySort = PropertySort.Categorized;
         }
