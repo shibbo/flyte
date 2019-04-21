@@ -98,7 +98,10 @@ namespace flyte.archive.common
                     string deobfus = GetStringFromHash(hash);
 
                     if (deobfus != "")
-                        files.Add(deobfus, pair.Value);
+                    {
+                        if (deobfus.Contains(".bflyt"))
+                            files.Add(deobfus, pair.Value);
+                    }
                     else
                     {
                         // this is me being nice
@@ -140,8 +143,24 @@ namespace flyte.archive.common
 
             foreach (KeyValuePair<string, byte[]> pair in mFileData)
             {
-                if (pair.Key.Contains(".bntx") || mFileNameTable.isObfuscated())
-                    files.Add(pair.Key, pair.Value);
+                if (mFileNameTable.isObfuscated())
+                {
+                    // attempt to see if we have the de-obfuscated string
+                    uint hash = uint.Parse(pair.Key.Replace("hash_", ""), System.Globalization.NumberStyles.HexNumber);
+                    string deobfus = GetStringFromHash(hash);
+
+                    if (deobfus != "")
+                    {
+                        if (deobfus.Contains(".bntx") || deobfus.Contains(".bflim"))
+                            files.Add(deobfus, pair.Value);
+                    }
+                }
+                else
+                {
+                    if (pair.Key.Contains(".bntx") || pair.Key.Contains(".bflim") || mFileNameTable.isObfuscated())
+                        files.Add(pair.Key, pair.Value);
+                }
+               
             }
 
             return files;

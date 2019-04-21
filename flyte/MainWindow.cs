@@ -438,7 +438,7 @@ namespace flyte
                 editor.Show();
         }
 
-        private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
+        private void TexturesList_DoubleClick(object sender, EventArgs e)
         {
             string a = mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem);
             byte[] data = mArchive.getLayoutImages()[mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem)];

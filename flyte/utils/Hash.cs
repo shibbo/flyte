@@ -18,7 +18,7 @@ namespace flyte.utils
             foreach(string str in strings)
             {
                 string name = str.Split('=')[0];
-                string hashStr = str.Split('=')[1].Replace("0x", "");
+                string hashStr = str.Split('=')[1].Replace("0x", "").ToUpper();
                 uint hash = Convert.ToUInt32(hashStr, 16);
 
                 // sometimes there are duplicates
