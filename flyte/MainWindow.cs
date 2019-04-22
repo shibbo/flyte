@@ -29,6 +29,8 @@ using System.Text;
 using flyte.img.wii;
 using flyte.lyt.common;
 using flyte.img;
+using flyte.lyt.gc;
+using flyte.lyt.gc.blo1;
 
 namespace flyte
 {
@@ -55,8 +57,10 @@ namespace flyte
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 Clear();
-                ProcessData(dialog.FileName, null);
-                this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
+                bool ret = ProcessData(dialog.FileName, null);
+
+                if (ret)
+                    this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
             }
         }
 
@@ -240,6 +244,15 @@ namespace flyte
                     data = mLayoutFiles[selectedFile];
                     layoutReader = new EndianBinaryReader(data);
                     mMainLayout = new BFLYT(ref layoutReader);
+                    break;
+                case ".blo":
+                    data = mLayoutFiles[selectedFile];
+                    layoutReader = new EndianBinaryReader(data);
+
+                    if (layoutReader.ReadStringFrom(4, 4) == "blo1")
+                        mMainLayout = new BLO1(ref layoutReader);
+                    else
+                        MessageBox.Show("blo2 is not supported yet.");
                     break;
                 default:
                     MessageBox.Show("This format is not supported yet.");
@@ -440,6 +453,9 @@ namespace flyte
 
         private void TexturesList_DoubleClick(object sender, EventArgs e)
         {
+            if (texturesList.Items.Count == 0)
+                return;
+
             string a = mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem);
             byte[] data = mArchive.getLayoutImages()[mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem)];
 

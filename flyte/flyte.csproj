@@ -96,6 +96,11 @@
     <Compile Include="lyt\common\TXT1.cs" />
     <Compile Include="lyt\common\USD1.cs" />
     <Compile Include="lyt\common\WND1.cs" />
+    <Compile Include="lyt\gc\blo1\BLO1.cs" />
+    <Compile Include="lyt\gc\blo1\PAN1.cs" />
+    <Compile Include="lyt\gc\blo1\PIC1.cs" />
+    <Compile Include="lyt\gc\blo1\TBX1.cs" />
+    <Compile Include="lyt\gc\blo1\WIN1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\MaterialBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
@@ -196,6 +201,9 @@
     <Content Include="resource\hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lyt\gc\blo2\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

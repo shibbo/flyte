@@ -283,6 +283,16 @@ namespace flyte.io
         }
 
         /// <summary>
+        /// Reads a string with a length prefix.
+        /// </summary>
+        /// <returns>The read string.</returns>
+        public string ReadStringLengthPrefix()
+        {
+            byte len = ReadByte();
+            return ReadString(len);
+        }
+
+        /// <summary>
         /// Reads bytes from a given location in the stream.
         /// </summary>
         /// <param name="where">Where the bytes are located in the stream.</param>
@@ -338,6 +348,14 @@ namespace flyte.io
             };
 
             return ret;
+        }
+
+        public void ReadAligned(int mult)
+        {
+            long remainder = (Pos() % mult);
+
+            if (remainder != 0)
+                ReadBytes(mult - (int)remainder);
         }
 
         Endianess mEndianess;

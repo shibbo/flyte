@@ -241,7 +241,7 @@
             this.materialList.FormattingEnabled = true;
             this.materialList.Location = new System.Drawing.Point(3, 28);
             this.materialList.Name = "materialList";
-            this.materialList.Size = new System.Drawing.Size(255, 316);
+            this.materialList.Size = new System.Drawing.Size(255, 485);
             this.materialList.TabIndex = 0;
             this.materialList.DoubleClick += new System.EventHandler(this.MaterialList_DoubleClick);
             // 
@@ -319,7 +319,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.layoutPropertyGrid.Location = new System.Drawing.Point(3, 215);
             this.layoutPropertyGrid.Name = "layoutPropertyGrid";
-            this.layoutPropertyGrid.Size = new System.Drawing.Size(252, 139);
+            this.layoutPropertyGrid.Size = new System.Drawing.Size(263, 299);
             this.layoutPropertyGrid.TabIndex = 5;
             this.layoutPropertyGrid.ToolbarVisible = false;
             // 
