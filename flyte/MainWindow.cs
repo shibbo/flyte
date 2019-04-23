@@ -31,6 +31,7 @@ using flyte.lyt.common;
 using flyte.img;
 using flyte.lyt.gc;
 using flyte.lyt.gc.blo1;
+using flyte.lyt.gc.blo2;
 
 namespace flyte
 {
@@ -252,7 +253,7 @@ namespace flyte
                     if (layoutReader.ReadStringFrom(4, 4) == "blo1")
                         mMainLayout = new BLO1(ref layoutReader);
                     else
-                        MessageBox.Show("blo2 is not supported yet.");
+                        mMainLayout = new BLO2(ref layoutReader);
                     break;
                 default:
                     MessageBox.Show("This format is not supported yet.");
@@ -456,20 +457,31 @@ namespace flyte
             if (texturesList.Items.Count == 0)
                 return;
 
-            string a = mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem);
+            string ext = Path.GetExtension(texturesList.GetItemText(texturesList.SelectedItem));
+
+            string[] exts = { ".tpl" };
+            bool isSupported = false;
+
+            for (int i = 0; i < exts.Length; i++)
+                isSupported = ext == exts[i] ? true : false;
+
+            if (!isSupported)
+            {
+                MessageBox.Show("This image format does not support viewing yet.");
+                return;
+            }
+
             byte[] data = mArchive.getLayoutImages()[mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem)];
 
             EndianBinaryReader reader = new EndianBinaryReader(data);
 
             ImageContainerBase container = null;
 
-            switch (Path.GetExtension(texturesList.GetItemText(texturesList.SelectedItem)))
+            // no need for a default case since it will return if the format isnt supported
+            switch (ext)
             {
                 case ".tpl":
                     container = new TPL(ref reader);
-                    break;
-                default:
-                    MessageBox.Show("This image format does not support viewing yet.");
                     break;
             }
 

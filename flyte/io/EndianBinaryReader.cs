@@ -292,6 +292,16 @@ namespace flyte.io
             return ReadString(len);
         }
 
+        public string ReadStringLengthPrefixFrom(long where)
+        {
+            long startPos = Pos();
+            Seek(where);
+            byte len = ReadByte();
+            string ret = ReadString(len);
+            Seek(startPos);
+            return ret;
+        }
+
         /// <summary>
         /// Reads bytes from a given location in the stream.
         /// </summary>

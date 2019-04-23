@@ -101,6 +101,12 @@
     <Compile Include="lyt\gc\blo1\PIC1.cs" />
     <Compile Include="lyt\gc\blo1\TBX1.cs" />
     <Compile Include="lyt\gc\blo1\WIN1.cs" />
+    <Compile Include="lyt\gc\blo2\BLO2.cs" />
+    <Compile Include="lyt\gc\blo2\FNT1.cs" />
+    <Compile Include="lyt\gc\blo2\MAT1.cs" />
+    <Compile Include="lyt\gc\blo2\PAN2.cs" />
+    <Compile Include="lyt\gc\blo2\PIC2.cs" />
+    <Compile Include="lyt\gc\blo2\TEX1.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\MaterialBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
@@ -202,8 +208,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="lyt\gc\blo2\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
