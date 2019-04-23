@@ -61,7 +61,7 @@ namespace flyte
                 bool ret = ProcessData(dialog.FileName, null);
 
                 if (ret)
-                    this.Text = "flyte v0.2 Alpha -- " + Path.GetFileName(dialog.FileName);
+                    this.Text = "flyte v0.3 Alpha -- " + Path.GetFileName(dialog.FileName);
             }
         }
 
