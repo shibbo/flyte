@@ -386,7 +386,7 @@
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "MainWindow";
-            this.Text = "flyte v0.2 Alpha";
+            this.Text = "flyte v0.3 Alpha";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
