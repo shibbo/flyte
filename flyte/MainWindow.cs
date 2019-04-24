@@ -32,6 +32,7 @@ using flyte.img;
 using flyte.lyt.gc;
 using flyte.lyt.gc.blo1;
 using flyte.lyt.gc.blo2;
+using flyte.img._3ds;
 
 namespace flyte
 {
@@ -459,7 +460,7 @@ namespace flyte
 
             string ext = Path.GetExtension(texturesList.GetItemText(texturesList.SelectedItem));
 
-            string[] exts = { ".bti", ".tpl" };
+            string[] exts = { ".bti", ".tpl", ".bclim" };
             bool isSupported = false;
 
             for (int i = 0; i < exts.Length; i++)
@@ -507,14 +508,15 @@ namespace flyte
                 case ".bti":
                     container = new BTI(ref reader);
                     break;
+                case ".bclim":
+                    container = new BCLIM(ref reader);
+                    break;
             }
 
             if (container == null)
                 return;
 
             ImageViewer viewer = new ImageViewer();
-
-            //container.getImage(0).getImageBitmap().Save("Image.png", System.Drawing.Imaging.ImageFormat.Png);
 
             viewer.setImage(container.getImage(0));
             viewer.Show();

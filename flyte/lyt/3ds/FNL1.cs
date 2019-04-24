@@ -38,7 +38,6 @@ namespace flyte.lyt._3ds
             {
                 uint offset = reader.ReadUInt32();
                 mStrings.Add(reader.ReadStringNTFrom(offset + curPos));
-                reader.ReadUInt32();
             }
 
             reader.Seek(startPos + mSectionSize);

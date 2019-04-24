@@ -98,7 +98,7 @@ namespace flyte.img.wii
 
             mHeight = reader.ReadUInt16();
             mWidth = reader.ReadUInt16();
-            mFormat = (ImageDecoder.ImageFormat)reader.ReadUInt32();
+            mFormat = (ImageDecoder.ImageFormat_Wii)reader.ReadUInt32();
             mImageDataAddr = reader.ReadUInt32();
             mWrapS = reader.ReadUInt32();
             mWrapT = reader.ReadUInt32();
@@ -125,22 +125,22 @@ namespace flyte.img.wii
 
             switch (mFormat)
             {
-                case ImageDecoder.ImageFormat.I4:
+                case ImageDecoder.ImageFormat_Wii.I4:
                     mOutImg = ImageDecoder.DecodeI4(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.I8:
+                case ImageDecoder.ImageFormat_Wii.I8:
                     mOutImg = ImageDecoder.DecodeI8(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.IA4:
+                case ImageDecoder.ImageFormat_Wii.IA4:
                     mOutImg = ImageDecoder.DecodeIA4(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.IA8:
+                case ImageDecoder.ImageFormat_Wii.IA8:
                     mOutImg = ImageDecoder.DecodeIA8(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.RGB565:
+                case ImageDecoder.ImageFormat_Wii.RGB565:
                     mOutImg = ImageDecoder.DecodeRGB565(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.RGB5A3:
+                case ImageDecoder.ImageFormat_Wii.RGB5A3:
                     mOutImg = ImageDecoder.DecodeRGB5A3(ref reader, mHeight, mWidth);
                     break;
                 default:
@@ -168,7 +168,7 @@ namespace flyte.img.wii
 
         ushort mHeight;
         ushort mWidth;
-        ImageDecoder.ImageFormat mFormat;
+        ImageDecoder.ImageFormat_Wii mFormat;
         uint mImageDataAddr;
         uint mWrapS;
         uint mWrapT;
@@ -183,7 +183,7 @@ namespace flyte.img.wii
         byte[] mOutImg;
 
         [DisplayName("Format"), CategoryAttribute("General"), DescriptionAttribute("The image format.")]
-        public ImageDecoder.ImageFormat Format
+        public ImageDecoder.ImageFormat_Wii Format
         {
             get { return mFormat; }
             set { mFormat = value; }

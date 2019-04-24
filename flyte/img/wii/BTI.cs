@@ -54,7 +54,7 @@ namespace flyte.img
 
             reader.SetEndianess(Endian.Endianess.Big);
 
-            mFormat = (ImageDecoder.ImageFormat)reader.ReadByte();
+            mFormat = (ImageDecoder.ImageFormat_Wii)reader.ReadByte();
             mAlphaEnabled = reader.ReadByte() != 0;
             mWidth = reader.ReadUInt16();
             mHeight = reader.ReadUInt16();
@@ -91,22 +91,22 @@ namespace flyte.img
 
             switch (mFormat)
             {
-                case ImageDecoder.ImageFormat.I4:
+                case ImageDecoder.ImageFormat_Wii.I4:
                     mOutImg = ImageDecoder.DecodeI4(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.I8:
+                case ImageDecoder.ImageFormat_Wii.I8:
                     mOutImg = ImageDecoder.DecodeI8(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.IA4:
+                case ImageDecoder.ImageFormat_Wii.IA4:
                     mOutImg = ImageDecoder.DecodeIA4(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.IA8:
+                case ImageDecoder.ImageFormat_Wii.IA8:
                     mOutImg = ImageDecoder.DecodeIA8(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.RGB565:
+                case ImageDecoder.ImageFormat_Wii.RGB565:
                     mOutImg = ImageDecoder.DecodeRGB565(ref reader, mHeight, mWidth);
                     break;
-                case ImageDecoder.ImageFormat.RGB5A3:
+                case ImageDecoder.ImageFormat_Wii.RGB5A3:
                     mOutImg = ImageDecoder.DecodeRGB5A3(ref reader, mHeight, mWidth);
                     break;
                 default:
@@ -127,7 +127,7 @@ namespace flyte.img
 
         public override Bitmap getImageBitmap() { return mBitmap; }
 
-        ImageDecoder.ImageFormat mFormat;
+        ImageDecoder.ImageFormat_Wii mFormat;
         bool mAlphaEnabled;
         ushort mWidth;
         ushort mHeight;
@@ -145,7 +145,7 @@ namespace flyte.img
         Bitmap mBitmap;
 
         [DisplayName("Format"), CategoryAttribute("General"), DescriptionAttribute("The image format.")]
-        public ImageDecoder.ImageFormat Format
+        public ImageDecoder.ImageFormat_Wii Format
         {
             get { return mFormat; }
             set { mFormat = value; }
