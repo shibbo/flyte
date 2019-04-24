@@ -75,6 +75,8 @@ namespace flyte.lyt.gc.blo1
             reader.ReadAligned(0x4);
         }
 
+        public string getTextureName() { return mTextureName; }
+
         string mTextureName;
         string mPaletteName;
 

@@ -71,12 +71,6 @@ namespace flyte.lyt.gc.blo2
                     case "PIC2":
                         PIC2 pic = new PIC2(ref reader);
 
-                        if (!isRootPaneSet)
-                        {
-                            mRootPanel = pic;
-                            isRootPaneSet = true;
-                        }
-
                         if (parent != null)
                         {
                             parent.addChild(pic);
@@ -84,6 +78,28 @@ namespace flyte.lyt.gc.blo2
                         }
 
                         prev = pic;
+                        break;
+                    case "TBX2":
+                        TBX2 txt = new TBX2(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(txt);
+                            txt.setParent(parent);
+                        }
+
+                        prev = txt;
+                        break;
+                    case "WIN2":
+                        WIN2 win = new WIN2(ref reader);
+
+                        if (parent != null)
+                        {
+                            parent.addChild(win);
+                            win.setParent(parent);
+                        }
+
+                        prev = win;
                         break;
                     case "BGN1":
                         if (prev != null)
@@ -109,7 +125,13 @@ namespace flyte.lyt.gc.blo2
         }
 
         public override bool containsTextures() { return mTextureList != null; }
-        public override bool containsFonts() { return false; }
+        public override bool containsFonts()
+        {
+            if (mFontList != null && mFontList.getStrings() != null)
+                return mFontList.getStrings().Count != 0;
+            else
+                return false;
+        }
         public override bool containsMaterials() { return false; }
 
         public override List<string> getTextureNames()

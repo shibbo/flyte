@@ -50,6 +50,7 @@
     <Compile Include="archive\ArchiveBase.cs" />
     <Compile Include="archive\LH.cs" />
     <Compile Include="archive\LZ77.cs" />
+    <Compile Include="img\BTI.cs" />
     <Compile Include="img\ImageBase.cs" />
     <Compile Include="img\wii\TPL.cs" />
     <Compile Include="io\EndianBinaryWriter.cs" />
@@ -106,7 +107,9 @@
     <Compile Include="lyt\gc\blo2\MAT1.cs" />
     <Compile Include="lyt\gc\blo2\PAN2.cs" />
     <Compile Include="lyt\gc\blo2\PIC2.cs" />
+    <Compile Include="lyt\gc\blo2\TBX2.cs" />
     <Compile Include="lyt\gc\blo2\TEX1.cs" />
+    <Compile Include="lyt\gc\blo2\WIN2.cs" />
     <Compile Include="lyt\LayoutBase.cs" />
     <Compile Include="lyt\MaterialBase.cs" />
     <Compile Include="lyt\UserdataBase.cs" />
@@ -169,6 +172,7 @@
     <Compile Include="utils\Coord.cs" />
     <Compile Include="utils\Endian.cs" />
     <Compile Include="utils\Hash.cs" />
+    <Compile Include="utils\ImageDecoder.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

@@ -148,7 +148,7 @@ namespace flyte.archive.wii
 
             foreach (KeyValuePair<uint, FileEntry> pair in mFileEntries)
             {
-                if (pair.Value.Name.Contains(".tpl"))
+                if (pair.Value.Name.Contains(".tpl") || pair.Value.Name.Contains(".bti"))
                     files.Add(pair.Value.FullName, pair.Value.Data);
             }
 

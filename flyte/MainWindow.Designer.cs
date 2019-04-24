@@ -162,7 +162,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelList.Location = new System.Drawing.Point(3, 31);
             this.panelList.Name = "panelList";
-            this.panelList.Size = new System.Drawing.Size(252, 178);
+            this.panelList.Size = new System.Drawing.Size(263, 178);
             this.panelList.TabIndex = 4;
             this.panelList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PanelList_AfterSelect);
             // 

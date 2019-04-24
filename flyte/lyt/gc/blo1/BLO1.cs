@@ -13,6 +13,7 @@
 using flyte.io;
 using flyte.utils;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace flyte.lyt.gc.blo1
@@ -32,6 +33,8 @@ namespace flyte.lyt.gc.blo1
             string magic = "";
             LayoutBase prev = null;
             LayoutBase parent = null;
+
+            mTextureNames = new List<string>();
 
             bool isRootPaneSet = false;
 
@@ -69,6 +72,9 @@ namespace flyte.lyt.gc.blo1
 
                         prev = pic;
 
+                        // we need to find the textures ourselves
+                        if (!mTextureNames.Contains(pic.getTextureName()))
+                            mTextureNames.Add(pic.getTextureName());
                         break;
                     case "WIN1":
                         WIN1 window = new WIN1(ref reader);
@@ -120,9 +126,14 @@ namespace flyte.lyt.gc.blo1
         }
 
         public override LayoutBase getLayoutParams() { return mInfo; }
+        public override bool containsTextures() { return mTextureNames.Count != 0; }
+
+        public override List<string> getTextureNames() { return mTextureNames; }
 
         uint mSectionCount;
         INF1 mInfo;
+
+        List<string> mTextureNames;
     }
 
     class INF1 : LayoutBase

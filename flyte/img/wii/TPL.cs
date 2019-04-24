@@ -17,7 +17,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using flyte.io;
-using static flyte.utils.Endian;
+using flyte.utils;
 
 namespace flyte.img.wii
 {
@@ -25,7 +25,7 @@ namespace flyte.img.wii
     {
         public TPL(ref EndianBinaryReader reader)
         {
-            reader.SetEndianess(Endianess.Big);
+            reader.SetEndianess(Endian.Endianess.Big);
             mIdentifier = reader.ReadUInt32();
             mNumImages = reader.ReadUInt32();
             mImageTableOffset = reader.ReadUInt32();
@@ -92,28 +92,13 @@ namespace flyte.img.wii
 
     class TPLImage : ImageBase
     {
-        public enum ImageFormat
-        {
-            I4 = 0x0,
-            I8 = 0x1,
-            IA4 = 0x2,
-            IA8 = 0x3,
-            RGB565 = 0x4,
-            RGB5A3 = 0x5,
-            RGBA32 = 0x6,
-            C4 = 0x8,
-            C8 = 0x9,
-            C14X2 = 0xA,
-            CMPR = 0xE
-        }
-
         public TPLImage(ref EndianBinaryReader reader)
         {
             base.setType(ImagePlatform.Wii);
 
             mHeight = reader.ReadUInt16();
             mWidth = reader.ReadUInt16();
-            mFormat = (ImageFormat)reader.ReadUInt32();
+            mFormat = (ImageDecoder.ImageFormat)reader.ReadUInt32();
             mImageDataAddr = reader.ReadUInt32();
             mWrapS = reader.ReadUInt32();
             mWrapT = reader.ReadUInt32();
@@ -140,23 +125,23 @@ namespace flyte.img.wii
 
             switch (mFormat)
             {
-                case ImageFormat.I4:
-                    mOutImg = ImageDecompressor.DecodeI4(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.I4:
+                    mOutImg = ImageDecoder.DecodeI4(ref reader, mHeight, mWidth);
                     break;
-                case ImageFormat.I8:
-                    mOutImg = ImageDecompressor.DecodeI8(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.I8:
+                    mOutImg = ImageDecoder.DecodeI8(ref reader, mHeight, mWidth);
                     break;
-                case ImageFormat.IA4:
-                    mOutImg = ImageDecompressor.DecodeIA4(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.IA4:
+                    mOutImg = ImageDecoder.DecodeIA4(ref reader, mHeight, mWidth);
                     break;
-                case ImageFormat.IA8:
-                    mOutImg = ImageDecompressor.DecodeIA8(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.IA8:
+                    mOutImg = ImageDecoder.DecodeIA8(ref reader, mHeight, mWidth);
                     break;
-                case ImageFormat.RGB565:
-                    mOutImg = ImageDecompressor.DecodeRGB565(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.RGB565:
+                    mOutImg = ImageDecoder.DecodeRGB565(ref reader, mHeight, mWidth);
                     break;
-                case ImageFormat.RGB5A3:
-                    mOutImg = ImageDecompressor.DecodeRGB5A3(ref reader, mHeight, mWidth);
+                case ImageDecoder.ImageFormat.RGB5A3:
+                    mOutImg = ImageDecoder.DecodeRGB5A3(ref reader, mHeight, mWidth);
                     break;
                 default:
                     Console.WriteLine("Format " + mFormat + " not supported...");
@@ -183,7 +168,7 @@ namespace flyte.img.wii
 
         ushort mHeight;
         ushort mWidth;
-        ImageFormat mFormat;
+        ImageDecoder.ImageFormat mFormat;
         uint mImageDataAddr;
         uint mWrapS;
         uint mWrapT;
@@ -198,7 +183,7 @@ namespace flyte.img.wii
         byte[] mOutImg;
 
         [DisplayName("Format"), CategoryAttribute("General"), DescriptionAttribute("The image format.")]
-        public ImageFormat Format
+        public ImageDecoder.ImageFormat Format
         {
             get { return mFormat; }
             set { mFormat = value; }
@@ -297,218 +282,5 @@ namespace flyte.img.wii
         bool mUnpacked;
         PaletteImageFormat mPaletteFormat;
         uint mPaletteDataAddres;
-    }
-
-    class ImageDecompressor
-    {
-        public static byte[] DecodeI4(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height];
-
-            // block width and block height are both 8
-            for (int blockY = 0; blockY < height; blockY += 8)
-            {
-                for (int blockX = 0; blockX < width; blockX += 8)
-                {
-                    for (int y = 0; y < 8; y++)
-                    {
-                        // 4 bits per pixel
-                        for (int x = 0; x < 8; x += 2)
-                        {
-                            byte val = reader.ReadByte();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            int output = (((blockY + y) * width) + (blockX + x));
-                            // 4 bits greyscale, 4 bits alpha
-                            image[output++] = (byte)((val & 0xF0) | (val >> 4));
-                            image[output] = (byte)((val << 4) | (val & 0xF));
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static byte[] DecodeI8(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height];
-
-            for (int blockY = 0; blockY < height; blockY += 4)
-            {
-                for (int blockX = 0; blockX < width; blockX += 8)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        for (int x = 0; x < 8; x++)
-                        {
-                            byte val = reader.ReadByte();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            int output = (((blockY + y) * width) + (blockX + x));
-                            image[output] = val;
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static byte[] DecodeIA4(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height * 2];
-
-            for (int blockY = 0; blockY < height; blockY += 4)
-            {
-                for (int blockX = 0; blockX < width; blockX += 8)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        for (int x = 0; x < 8; x++)
-                        {
-                            byte val = reader.ReadByte();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            int output = (((blockY + y) * width) + (blockX + x)) * 2;
-                            image[output++] = (byte)((val << 4) | (val & 0xF));
-                            image[output] = (byte)((val & 0xF0) | (val >> 4));
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static byte[] DecodeIA8(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height * 2];
-
-            for (int blockY = 0; blockY < height; blockY += 4)
-            {
-                for (int blockX = 0; blockX < width; blockX += 4)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        for (int x = 0; x < 4; x++)
-                        {
-                            byte alpha = reader.ReadByte();
-                            byte val = reader.ReadByte();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            int output = (((blockY + y) * width) + (blockX + x)) * 2;
-                            image[output++] = val;
-                            image[output] = alpha;
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static byte[] DecodeRGB565(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height * 4];
-
-            for (int blockY = 0; blockY < height; blockY += 4)
-            {
-                for (int blockX = 0; blockX < width; blockX += 4)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        for (int x = 0; x < 4; x++)
-                        {
-                            ushort val = reader.ReadUInt16();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            // now we figure out our position
-                            int output = (((blockY + y) * width) + (blockX + x)) * 4;
-
-                            // 5 bits R, 6 bits G, 5 bits B, alpha is always 0xFF
-                            image[output++] = (byte)(((val & 0x001F) << 3) | ((val & 0x001F) >> 2));
-                            image[output++] = (byte)(((val & 0x07E0) >> 3) | ((val & 0x07E0) >> 8));
-                            image[output++] = (byte)(((val & 0xF800) >> 8) | ((val & 0xF800) >> 13));
-                            image[output] = 0xFF;
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
-
-        public static byte[] DecodeRGB5A3(ref EndianBinaryReader reader, int height, int width)
-        {
-            byte[] image = new byte[width * height * 4];
-
-            for (int blockY = 0; blockY < height; blockY += 4)
-            {
-                for (int blockX = 0; blockX < width; blockX += 4)
-                {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        for (int x = 0; x < 4; x++)
-                        {
-                            byte r, g, b, a;
-
-                            ushort val = reader.ReadUInt16();
-
-                            if (blockX + x >= width || blockY + y >= height)
-                                continue;
-
-                            int output = (((blockY + y) * width) + (blockX + x)) * 4;
-
-                            // does this have alpha?
-                            if ((val & 0x8000) == 0x8000)
-                            {
-                                r = (byte)(val & 0x1F);
-                                r = (byte)(r << 3 | r >> 2);
-
-                                g = (byte)((val & 0x3E0) >> 5);
-                                g = (byte)(g << 3 | g >> 2);
-
-                                b = (byte)((val & 0x7C00) >> 10);
-                                b = (byte)(b << 3 | b >> 2);
-
-                                a = 0xFF;
-                            }
-                            else
-                            {
-                                r = (byte)((val & 0xF0) >> 4);
-                                r = (byte)((r << 4) | r);
-
-                                g = (byte)((val & 0xF00) >> 8);
-                                g = (byte)((g << (8 - 4)) | g);
-
-                                b = (byte)((val & 0x7000) >> 12);
-                                b = (byte)(b << 5 | (b << 3) | (b >> 1));
-
-                                a = (byte)(val & 0xF);
-                                a = (byte)((a << 4) | a);
-                            }
-
-                            image[output++] = r;
-                            image[output++] = g;
-                            image[output++] = b;
-                            image[output] = a;
-                        }
-                    }
-                }
-            }
-
-            return image;
-        }
     }
 }

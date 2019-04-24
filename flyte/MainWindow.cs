@@ -459,11 +459,17 @@ namespace flyte
 
             string ext = Path.GetExtension(texturesList.GetItemText(texturesList.SelectedItem));
 
-            string[] exts = { ".tpl" };
+            string[] exts = { ".bti", ".tpl" };
             bool isSupported = false;
 
             for (int i = 0; i < exts.Length; i++)
-                isSupported = ext == exts[i] ? true : false;
+            {
+                if (exts[i] == ext)
+                {
+                    isSupported = true;
+                    break;
+                }
+            }
 
             if (!isSupported)
             {
@@ -471,7 +477,22 @@ namespace flyte
                 return;
             }
 
-            byte[] data = mArchive.getLayoutImages()[mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem)];
+            string fullPath = mMainRoot + "timg/" + texturesList.GetItemText(texturesList.SelectedItem);
+
+            byte[] data = null;
+
+            if (mLayoutImages.ContainsKey(fullPath))
+                data = mLayoutImages[fullPath];
+
+            // this is because TEX1 has paths as upper but the filenames are lowercase
+            if (data == null)
+            {
+                if (mLayoutImages.ContainsKey(fullPath.ToLower()))
+                    data = mLayoutImages[fullPath.ToLower()];
+            }
+
+            if (data == null)
+                return;
 
             EndianBinaryReader reader = new EndianBinaryReader(data);
 
@@ -483,12 +504,17 @@ namespace flyte
                 case ".tpl":
                     container = new TPL(ref reader);
                     break;
+                case ".bti":
+                    container = new BTI(ref reader);
+                    break;
             }
 
             if (container == null)
                 return;
 
             ImageViewer viewer = new ImageViewer();
+
+            //container.getImage(0).getImageBitmap().Save("Image.png", System.Drawing.Imaging.ImageFormat.Png);
 
             viewer.setImage(container.getImage(0));
             viewer.Show();

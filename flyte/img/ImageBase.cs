@@ -16,10 +16,11 @@ namespace flyte.img
     {
         public enum ImagePlatform
         {
-            Wii = 0,
-            _3DS = 1,
-            WiiU = 2,
-            Switch = 3
+            GC = 0,
+            Wii = 1,
+            _3DS = 2,
+            WiiU = 3,
+            Switch = 4
         }
 
         public virtual Bitmap getImageBitmap() { return null; }
