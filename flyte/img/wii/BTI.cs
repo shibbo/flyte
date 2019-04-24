@@ -13,6 +13,7 @@
 using flyte.io;
 using flyte.utils;
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -142,5 +143,61 @@ namespace flyte.img
 
         byte[] mOutImg;
         Bitmap mBitmap;
+
+        [DisplayName("Format"), CategoryAttribute("General"), DescriptionAttribute("The image format.")]
+        public ImageDecoder.ImageFormat Format
+        {
+            get { return mFormat; }
+            set { mFormat = value; }
+        }
+
+        [DisplayName("Is Alpha Enabled"), CategoryAttribute("General"), DescriptionAttribute("Is the alpha component enabled?")]
+        public bool AlphaEnabled
+        {
+            get { return mAlphaEnabled; }
+            set { mAlphaEnabled = value; }
+        }
+
+        [DisplayName("Height"), CategoryAttribute("Size"), DescriptionAttribute("The height of the image.")]
+        public ushort Height
+        {
+            get { return mHeight; }
+            set { mHeight = value; }
+        }
+
+        [DisplayName("Width"), CategoryAttribute("Size"), DescriptionAttribute("The width of the image.")]
+        public ushort Width
+        {
+            get { return mWidth; }
+            set { mWidth = value; }
+        }
+
+        [DisplayName("Wrap S"), CategoryAttribute("Wrap"), DescriptionAttribute("Wrap S.")]
+        public byte WrapS
+        {
+            get { return mWrapS; }
+            set { mWrapS = value; }
+        }
+
+        [DisplayName("Wrap T"), CategoryAttribute("Wrap"), DescriptionAttribute("Wrap T.")]
+        public byte WrapT
+        {
+            get { return mWrapT; }
+            set { mWrapT = value; }
+        }
+
+        [DisplayName("MagFilter"), CategoryAttribute("Filter"), DescriptionAttribute("MagFilter")]
+        public FilterType MagFilter
+        {
+            get { return mMagFilter; }
+            set { mMagFilter = value; }
+        }
+
+        [DisplayName("MinFilter"), CategoryAttribute("Filter"), DescriptionAttribute("MinFilter")]
+        public FilterType MinFilter
+        {
+            get { return mMinFilter; }
+            set { mMinFilter = value; }
+        }
     }
 }

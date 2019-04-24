@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,7 +51,7 @@
     <Compile Include="archive\ArchiveBase.cs" />
     <Compile Include="archive\LH.cs" />
     <Compile Include="archive\LZ77.cs" />
-    <Compile Include="img\BTI.cs" />
+    <Compile Include="img\wii\BTI.cs" />
     <Compile Include="img\ImageBase.cs" />
     <Compile Include="img\wii\TPL.cs" />
     <Compile Include="io\EndianBinaryWriter.cs" />
