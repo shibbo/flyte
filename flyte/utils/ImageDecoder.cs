@@ -316,6 +316,7 @@ namespace flyte.utils
             LA8 = 3,
             HILO8 = 4,
             RGB565 = 5,
+            RGB8 = 6,
             RGBA5551 = 7,
             RGBA4444 = 8,
             RGBA8 = 9,
