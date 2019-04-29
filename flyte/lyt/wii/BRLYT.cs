@@ -15,9 +15,6 @@ using flyte.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using static flyte.utils.Endian;
 
 namespace flyte.lyt.wii
@@ -186,37 +183,11 @@ namespace flyte.lyt.wii
                         break;
                 }
             }
-
-            mRect = new RenderRectangle(0, 0, (int)mLayoutParams.mHeight, (int)mLayoutParams.mWidth);
         }
 
         public override void draw()
         {
-            // draw our root panel first
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-
-            GL.PushMatrix();
-
-            GL.Translate((mRect.mLeft), (mRect.mTop), 0.0d);
-
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mLeft, mRect.mTop, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mRight, mRect.mTop, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mRight, mRect.mBottom, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mLeft, mRect.mBottom, 0.0d);
-            GL.End();
-
-            // now we draw all of the children
-            foreach (LayoutBase child in mRootPanel.getChildren())
-                child.draw();
-
-            GL.PopMatrix();
-
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            mRootPanel.draw();
         }
 
         public override void write(ref EndianBinaryWriter writer)
@@ -317,11 +288,11 @@ namespace flyte.lyt.wii
             writer.Write(mHeight);
         }
 
+        float mWidth;
+        float mHeight;
         uint mSectionSize;
         bool mIsCentered;
         byte[] mPadding; // supposed padding
-        public float mWidth;
-        public float mHeight;
 
         [DisplayName("Is Centered"), CategoryAttribute("General"), DescriptionAttribute("Centers the entire layout if true.")]
         public bool IsCentered

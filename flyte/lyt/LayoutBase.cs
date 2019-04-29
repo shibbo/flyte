@@ -65,8 +65,6 @@ namespace flyte.lyt
         public virtual void write(ref EndianBinaryWriter writer) { }
         public virtual void draw() { }
 
-        public RenderRectangle mRect;
-
         List<LayoutBase> mChildren;
         LayoutBase mParent;
 

@@ -361,6 +361,7 @@ namespace flyte
             texturesList.Items.Clear();
             fontsList.Items.Clear();
             materialList.Items.Clear();
+            layoutViewer.Invalidate();
         }
 
         /// <summary>
@@ -560,21 +561,16 @@ namespace flyte
             GL.ClearColor(Color4.CornflowerBlue);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.FrontFace(FrontFaceDirection.Cw);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-
-            GL.Enable(EnableCap.LineSmooth);
-            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
-            GL.LineWidth(1.5f);
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-
-            GL.Ortho(0, layoutViewer.Width, 0, layoutViewer.Height, -1, 1);
-            GL.Viewport(0, 0, layoutViewer.Width, layoutViewer.Height);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.Scale(2 / (float)layoutViewer.Width, 2 / (float)layoutViewer.Height, 1f);
+            GL.MatrixMode(MatrixMode.Modelview);
 
             mIsViewerLoaded = true;
+        }
+
+        private void LayoutViewer_Resize(object sender, EventArgs e)
+        {
+            layoutViewer.Refresh();
         }
     }
 }

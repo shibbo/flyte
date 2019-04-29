@@ -105,7 +105,7 @@ namespace flyte.lyt.common
             mName = reader.ReadStringNTFrom(startPos + mNameOffset);
 
             // this is the last structure in the file, and we don't even get a count...
-            if (mPerCharTransformOffset != 0)
+            /*if (mPerCharTransformOffset != 0)
             {
                 reader.Seek(startPos + mPerCharTransformOffset);
 
@@ -115,7 +115,7 @@ namespace flyte.lyt.common
 
                 for (int i = 0; i < numEntries; i++)
                     mTransforms.Add(new PerCharTransform(ref reader));
-            }
+            }*/
 
             // and we are done
             reader.Seek(startPos + mSectionSize);

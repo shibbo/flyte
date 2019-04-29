@@ -62,39 +62,59 @@ namespace flyte.lyt.wii
             mScaleY = reader.ReadF32();
             mWidth = reader.ReadF32();
             mHeight = reader.ReadF32();
-
-            mRect = new RenderRectangle(0, 0, (int)mHeight, (int)mWidth);
         }
 
         public override void draw()
         {
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            /*if (base.getType() == "Panel")
+                return;*/
 
             GL.PushMatrix();
+            GL.Translate(mTransX, mTransY, 0);
+            GL.Scale(mScaleX, mScaleY, 1);
 
-            GL.Translate(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
+            RenderRectangle.OriginH originH = RenderRectangle.OriginH.CENTER;
+            RenderRectangle.OriginV originV = RenderRectangle.OriginV.CENTER;
 
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mRight, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mRight, mRect.mBottom, 0.0d);
-            GL.Color4(Color4.White);
-            GL.Vertex3(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mBottom, 0.0d);
-            GL.End();
+            switch (mHorizontalOrigin)
+            {
+                case OriginType.Left:
+                    originH = RenderRectangle.OriginH.LEFT;
+                    break;
+                case OriginType.Right:
+                    originH = RenderRectangle.OriginH.RIGHT;
+                    break;
+                case OriginType.Center:
+                    originH = RenderRectangle.OriginH.CENTER;
+                    break;
+            }
+
+            switch (mVerticalOrigin)
+            {
+                case OriginType.Top:
+                    originV = RenderRectangle.OriginV.TOP;
+                    break;
+                case OriginType.Bottom:
+                    originV = RenderRectangle.OriginV.BOTTOM;
+                    break;
+                case OriginType.Center:
+                    originV = RenderRectangle.OriginV.CENTER;
+                    break;
+            }
+
+            RenderRectangle.DrawRect((int)mWidth, (int)mHeight, originH, originV);
 
             // no children to draw
             if (base.getChildren() == null)
+            {
+                GL.PopMatrix();
                 return;
+            }
 
             foreach (LayoutBase child in base.getChildren())
                 child.draw();
 
             GL.PopMatrix();
-
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
         public override void addUserData(UserdataBase data)
@@ -110,6 +130,8 @@ namespace flyte.lyt.wii
         byte mOrigin;
         byte mAlpha;
         string mUserData;
+        float mWidth;
+        float mHeight;
         float mTransX;
         float mTransY;
         float mTransZ;
@@ -118,8 +140,6 @@ namespace flyte.lyt.wii
         float mRotZ;
         float mScaleX;
         float mScaleY;
-        float mWidth;
-        float mHeight;
 
         bool mIsVisible;
         bool mInfluencedAlpha;

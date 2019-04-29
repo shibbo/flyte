@@ -5,17 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using flyte.io;
+using flyte.utils;
 
 namespace flyte.lyt.common
 {
     class PAN1 : LayoutBase
     {
-        public enum Origin
+        public enum OriginX
         {
             Center = 0,
             Left = 1,
             Right = 2
+        }
+
+        public enum OriginY
+        {
+            Center = 0,
+            Top = 1,
+            Bottom = 2
         }
 
         public PAN1(ref EndianBinaryReader reader) : base()
@@ -29,10 +40,10 @@ namespace flyte.lyt.common
             mInfluencedAlpha = Convert.ToBoolean(flags & 0x2);
 
             byte origin = reader.ReadByte();
-            mOriginX = (Origin)((origin >> 6) & 0x3);
-            mOriginY = (Origin)((origin >> 4) & 0x3);
-            mParentOriginX = (Origin)((origin >> 2) & 0x3);
-            mParentOriginY = (Origin)(origin & 0x3);
+            mOriginX = (OriginX)((origin >> 6) & 0x3);
+            mOriginY = (OriginY)((origin >> 4) & 0x3);
+            mParentOriginX = (OriginX)((origin >> 2) & 0x3);
+            mParentOriginY = (OriginY)(origin & 0x3);
 
             mAlpha = reader.ReadByte();
             mUnk0B = reader.ReadByte();
@@ -51,13 +62,63 @@ namespace flyte.lyt.common
             mHeight = reader.ReadF32();
         }
 
+        public override void draw()
+        {
+            GL.PushMatrix();
+            GL.Translate(mTransX, mTransY, 0);
+            GL.Scale(mScaleX, mScaleY, 1);
+
+            RenderRectangle.OriginH originH = RenderRectangle.OriginH.CENTER;
+            RenderRectangle.OriginV originV = RenderRectangle.OriginV.CENTER;
+
+            switch (mOriginX)
+            {
+                case OriginX.Left:
+                    originH = RenderRectangle.OriginH.LEFT;
+                    break;
+                case OriginX.Right:
+                    originH = RenderRectangle.OriginH.RIGHT;
+                    break;
+                case OriginX.Center:
+                    originH = RenderRectangle.OriginH.CENTER;
+                    break;
+            }
+
+            switch (mOriginY)
+            {
+                case OriginY.Top:
+                    originV = RenderRectangle.OriginV.TOP;
+                    break;
+                case OriginY.Bottom:
+                    originV = RenderRectangle.OriginV.BOTTOM;
+                    break;
+                case OriginY.Center:
+                    originV = RenderRectangle.OriginV.CENTER;
+                    break;
+            }
+
+            RenderRectangle.DrawRect((int)mWidth, (int)mHeight, originH, originV);
+
+            // no children to draw
+            if (base.getChildren() == null)
+            {
+                GL.PopMatrix();
+                return;
+            }
+
+            foreach (LayoutBase child in base.getChildren())
+                child.draw();
+
+            GL.PopMatrix();
+        }
+
         public uint mSectionSize;
         bool mInfluencedAlpha;
         bool mIsVisible;
-        Origin mOriginX;
-        Origin mOriginY;
-        Origin mParentOriginX;
-        Origin mParentOriginY;
+        OriginX mOriginX;
+        OriginY mOriginY;
+        OriginX mParentOriginX;
+        OriginY mParentOriginY;
         byte mAlpha;
         byte mUnk0B;
         string mUserData;
@@ -87,14 +148,14 @@ namespace flyte.lyt.common
         }
 
         [DisplayName("X Origin"), CategoryAttribute("Origin"), DescriptionAttribute("The X origin of the element.")]
-        public Origin HorizontalX
+        public OriginX HorizontalX
         {
             get { return mOriginX; }
             set { mOriginX = value; }
         }
 
         [DisplayName("Y Origin"), CategoryAttribute("Origin"), DescriptionAttribute("The Y origin of the element.")]
-        public Origin HorizontalY
+        public OriginY HorizontalY
         {
             get { return mOriginY; }
             set { mOriginY = value; }

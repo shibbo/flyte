@@ -209,6 +209,11 @@ namespace flyte.lyt.common
             }
         }
 
+        public override void draw()
+        {
+            mRootPanel.draw();
+        }
+
         public override bool containsTextures() { return mTextureList != null; }
         public override bool containsFonts() { return mFontList != null; }
         public override bool containsMaterials()

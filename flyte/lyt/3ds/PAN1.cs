@@ -62,8 +62,9 @@ namespace flyte.lyt._3ds
         float mRotZ;
         float mScaleX;
         float mScaleY;
-        float mHeight;
+
         float mWidth;
+        float mHeight;
 
         bool mIsVisible;
         bool mInfluencedAlpha;
