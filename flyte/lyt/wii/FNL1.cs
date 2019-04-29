@@ -40,6 +40,54 @@ namespace flyte.lyt.wii
             reader.Seek(startPos + mSectionSize);
         }
 
+        public void write(ref EndianBinaryWriter writer)
+        {
+            writer.Write(0x666E6C31);
+            long sectionSizePos = writer.Pos();
+            writer.Write(mNumFonts);
+            writer.Write(mUnk0A);
+
+            // we already account for 0xC bytes: magic, section length, num fonts, and 2 bytes padding
+            int sectionSize = 0xC;
+
+            // starting offset for our first string
+            int curOffsetLoc = mNumFonts * 0x8;
+            sectionSize += mNumFonts * 0x8;
+
+            // this is our first offset, no matter what
+            writer.Write(curOffsetLoc);
+            writer.Write(0); // unused
+
+            // we write our offsets now (-1 since we already assigned our first one)
+            for (int i = 0; i < mNumFonts - 1; i++)
+            {
+                // get our length (+1 for NT)
+                int len = getFontNameFromIndex(i).Length + 1;
+                curOffsetLoc += len;
+                writer.Write(curOffsetLoc);
+                sectionSize += len;
+            }
+
+            // now lets write our fonts
+            for (int i = 0; i < mNumFonts; i++)
+            {
+                writer.Write(getFontNameFromIndex(i));
+                writer.Write((byte)0); // null terminator
+            }
+
+            long remainder = (writer.Pos() % 0x4);
+
+            if (remainder != 0)
+            {
+                int numBytes = 0x4 - (int)remainder;
+                sectionSize += numBytes;
+            }
+
+            writer.WriteAligned(0x4);
+
+            writer.WriteInt32At(sectionSizePos, sectionSize);
+        }
+
         public List<string> getStrings() { return mStrings; }
 
         public string getFontNameFromIndex(int idx)

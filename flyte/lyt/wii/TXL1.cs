@@ -41,6 +41,11 @@ namespace flyte.lyt.wii
             reader.Seek(startPos + mSectionSize);
         }
 
+        public void write(ref EndianBinaryWriter writer)
+        {
+
+        }
+
         public List<string> getStrings() { return mStrings; }
 
         public bool doesImageExistWithExt(string name)

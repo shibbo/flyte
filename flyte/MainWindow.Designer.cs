@@ -32,6 +32,7 @@
             this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +59,7 @@
             this.texturesList = new System.Windows.Forms.ListBox();
             this.fontsPage = new System.Windows.Forms.TabPage();
             this.fontsList = new System.Windows.Forms.ListBox();
-            this.layoutViewer = new System.Windows.Forms.PictureBox();
+            this.layoutViewer = new OpenTK.GLControl();
             this.mainMenuStrip.SuspendLayout();
             this.mainTabControl.SuspendLayout();
             this.layoutPage.SuspendLayout();
@@ -68,7 +69,6 @@
             this.elementActionsToolStrip.SuspendLayout();
             this.texturesPage.SuspendLayout();
             this.fontsPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutViewer)).BeginInit();
             this.SuspendLayout();
             // 
             // mainMenuStrip
@@ -86,6 +86,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
             this.extractToolStripMenuItem,
             this.closeFileToolStripMenuItem,
             this.quitToolStripMenuItem});
@@ -97,15 +98,23 @@
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Enabled = false;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // extractToolStripMenuItem
             // 
             this.extractToolStripMenuItem.Enabled = false;
             this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-            this.extractToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.extractToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.extractToolStripMenuItem.Text = "Extract";
             this.extractToolStripMenuItem.Click += new System.EventHandler(this.ExtractToolStripMenuItem_Click);
             // 
@@ -113,7 +122,7 @@
             // 
             this.closeFileToolStripMenuItem.Name = "closeFileToolStripMenuItem";
             this.closeFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.closeFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeFileToolStripMenuItem.Text = "Close File";
             this.closeFileToolStripMenuItem.Click += new System.EventHandler(this.CloseFileToolStripMenuItem_Click);
             // 
@@ -121,7 +130,7 @@
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             this.quitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.QuitToolStripMenuItem_Click);
             // 
@@ -368,13 +377,14 @@
             this.layoutViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.layoutViewer.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            this.layoutViewer.Location = new System.Drawing.Point(276, 27);
+            this.layoutViewer.BackColor = System.Drawing.Color.Black;
+            this.layoutViewer.Location = new System.Drawing.Point(273, 24);
             this.layoutViewer.Name = "layoutViewer";
-            this.layoutViewer.Size = new System.Drawing.Size(658, 540);
+            this.layoutViewer.Size = new System.Drawing.Size(661, 540);
             this.layoutViewer.TabIndex = 6;
-            this.layoutViewer.TabStop = false;
-            this.layoutViewer.Paint += new System.Windows.Forms.PaintEventHandler(this.LayoutViewer_Paint);
+            this.layoutViewer.VSync = false;
+            this.layoutViewer.Load += new System.EventHandler(this.LayoutViewer_Load);
+            this.layoutViewer.Paint += new System.Windows.Forms.PaintEventHandler(this.LayoutViewer_Paint_1);
             // 
             // MainWindow
             // 
@@ -402,7 +412,6 @@
             this.elementActionsToolStrip.PerformLayout();
             this.texturesPage.ResumeLayout(false);
             this.fontsPage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.layoutViewer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -438,7 +447,8 @@
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
-        private System.Windows.Forms.PictureBox layoutViewer;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private OpenTK.GLControl layoutViewer;
     }
 }
 

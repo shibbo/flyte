@@ -11,9 +11,13 @@
 */
 
 using flyte.io;
+using flyte.utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using static flyte.utils.Endian;
 
 namespace flyte.lyt.wii
@@ -23,6 +27,7 @@ namespace flyte.lyt.wii
         public BRLYT(ref EndianBinaryReader reader) : base()
         {
             reader.SetEndianess(Endianess.Big);
+            base.setLayoutVersion(LayoutVersion.Wii);
 
             if (reader.ReadString(4) != "RLYT")
             {
@@ -181,6 +186,53 @@ namespace flyte.lyt.wii
                         break;
                 }
             }
+
+            mRect = new RenderRectangle(0, 0, (int)mLayoutParams.mHeight, (int)mLayoutParams.mWidth);
+        }
+
+        public override void draw()
+        {
+            // draw our root panel first
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
+            GL.PushMatrix();
+
+            GL.Translate((mRect.mLeft), (mRect.mTop), 0.0d);
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mLeft, mRect.mTop, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mRight, mRect.mTop, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mRight, mRect.mBottom, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mLeft, mRect.mBottom, 0.0d);
+            GL.End();
+
+            // now we draw all of the children
+            foreach (LayoutBase child in mRootPanel.getChildren())
+                child.draw();
+
+            GL.PopMatrix();
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        }
+
+        public override void write(ref EndianBinaryWriter writer)
+        {
+            writer.SetEndianess(Endianess.Big);
+
+            writer.Write(0x524C5954);
+            writer.Write(mBOM);
+            writer.Write(mVersion);
+            writer.Write(mFileLength);
+            writer.Write(mHeaderLength);
+            writer.Write(mNumSections);
+
+            mLayoutParams.write(ref writer);
+            mTextureList.write(ref writer);
+            mFontList.write(ref writer);
         }
 
         public override bool containsTextures() { return mTextureList != null; }
@@ -255,11 +307,21 @@ namespace flyte.lyt.wii
             mHeight = reader.ReadF32();
         }
 
+        public override void write(ref EndianBinaryWriter writer)
+        {
+            writer.Write(0x6C797431);
+            writer.Write(mSectionSize);
+            writer.Write(mIsCentered);
+            writer.WritePad(0x3);
+            writer.Write(mWidth);
+            writer.Write(mHeight);
+        }
+
         uint mSectionSize;
         bool mIsCentered;
         byte[] mPadding; // supposed padding
-        float mWidth;
-        float mHeight;
+        public float mWidth;
+        public float mHeight;
 
         [DisplayName("Is Centered"), CategoryAttribute("General"), DescriptionAttribute("Centers the entire layout if true.")]
         public bool IsCentered

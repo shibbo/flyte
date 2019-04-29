@@ -10,13 +10,23 @@
     with flyte. If not, see http://www.gnu.org/licenses/.
 */
 
+using flyte.io;
 using flyte.lyt.wii;
+using flyte.utils;
 using System.Collections.Generic;
 
 namespace flyte.lyt
 {
     public class LayoutBase
     {
+        public enum LayoutVersion
+        {
+            GC = 0,
+            Wii = 1,
+            _3DS = 2,
+            WiiU = 3,
+            Switch = 4
+        }
         public LayoutBase() { }
 
         public void addChild(LayoutBase child)
@@ -26,6 +36,9 @@ namespace flyte.lyt
 
             mChildren.Add(child);
         }
+
+        public void setLayoutVersion(LayoutVersion version) { mLayoutVersion = version; }
+        public LayoutVersion getLayoutVersion() { return mLayoutVersion; }
 
         public List<LayoutBase> getChildren() { return mChildren; }
         public void setParent(LayoutBase parent) { mParent = parent; }
@@ -49,6 +62,11 @@ namespace flyte.lyt
         public virtual List<string> getMaterialNames() { return null; }
         public virtual List<MaterialBase> getMaterials() { return null; }
 
+        public virtual void write(ref EndianBinaryWriter writer) { }
+        public virtual void draw() { }
+
+        public RenderRectangle mRect;
+
         List<LayoutBase> mChildren;
         LayoutBase mParent;
 
@@ -56,5 +74,6 @@ namespace flyte.lyt
 
         string mType;
         public string mName;
+        LayoutVersion mLayoutVersion;
     }
 }

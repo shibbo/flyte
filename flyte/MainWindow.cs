@@ -33,6 +33,9 @@ using flyte.lyt.gc;
 using flyte.lyt.gc.blo1;
 using flyte.lyt.gc.blo2;
 using flyte.img._3ds;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 
 namespace flyte
 {
@@ -331,6 +334,11 @@ namespace flyte
                     materialList.Items.Add(str);
             }
 
+            // this draws the border of the layout
+            mMainLayout.draw();
+
+            layoutViewer.Refresh();
+
             return true;
         }
 
@@ -386,16 +394,6 @@ namespace flyte
             }
         }
 
-        ArchiveBase mArchive;
-
-        Dictionary<string, byte[]> mLayoutFiles;
-        Dictionary<string, byte[]> mLayoutAnimFiles;
-        Dictionary<string, byte[]> mLayoutImages;
-        Dictionary<string, byte[]> mLayoutControls;
-
-        LayoutBase mMainLayout;
-        string mMainRoot;
-
         private void LoadAnimationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutChooser layoutChooser = new LayoutChooser();
@@ -419,11 +417,6 @@ namespace flyte
            {
                 layoutPropertyGrid.SelectedObject = panelList.SelectedNode.Tag;     
            }
-        }
-
-        private void LayoutViewer_Paint(object sender, PaintEventArgs e)
-        {
-            /* todo -- drawing */
         }
 
         private void MaterialList_DoubleClick(object sender, EventArgs e)
@@ -520,6 +513,68 @@ namespace flyte
 
             viewer.setImage(container.getImage(0));
             viewer.Show();
+        }
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (mMainLayout == null)
+                return;
+
+            switch (mMainLayout.getLayoutVersion())
+            {
+                /*case LayoutBase.LayoutVersion.Wii:
+                    mMainLayout.write(ref writer);
+                    break;*/
+                default:
+                    MessageBox.Show("Saving is not supported for this format yet.");
+                    return;
+            }
+        }
+
+        private void LayoutViewer_Paint_1(object sender, PaintEventArgs e)
+        {
+            if (!mIsViewerLoaded)
+                return;
+
+            layoutViewer.MakeCurrent();
+
+            layoutViewer.SwapBuffers();
+        }
+
+        ArchiveBase mArchive;
+
+        Dictionary<string, byte[]> mLayoutFiles;
+        Dictionary<string, byte[]> mLayoutAnimFiles;
+        Dictionary<string, byte[]> mLayoutImages;
+        Dictionary<string, byte[]> mLayoutControls;
+
+        LayoutBase mMainLayout;
+        string mMainRoot;
+
+        bool mIsViewerLoaded;
+
+        private void LayoutViewer_Load(object sender, EventArgs e)
+        {
+            layoutViewer.MakeCurrent();
+
+            GL.ClearColor(Color4.CornflowerBlue);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.FrontFace(FrontFaceDirection.Cw);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
+            GL.Enable(EnableCap.LineSmooth);
+            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
+            GL.LineWidth(1.5f);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GL.Ortho(0, layoutViewer.Width, 0, layoutViewer.Height, -1, 1);
+            GL.Viewport(0, 0, layoutViewer.Width, layoutViewer.Height);
+
+            mIsViewerLoaded = true;
         }
     }
 }

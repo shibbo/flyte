@@ -15,6 +15,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using flyte.io;
+using flyte.utils;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 
 namespace flyte.lyt.wii
 {
@@ -58,6 +62,39 @@ namespace flyte.lyt.wii
             mScaleY = reader.ReadF32();
             mWidth = reader.ReadF32();
             mHeight = reader.ReadF32();
+
+            mRect = new RenderRectangle(0, 0, (int)mHeight, (int)mWidth);
+        }
+
+        public override void draw()
+        {
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+
+            GL.PushMatrix();
+
+            GL.Translate(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mRight, mRect.mTop + base.getParent().mRect.mTop, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mRight, mRect.mBottom, 0.0d);
+            GL.Color4(Color4.White);
+            GL.Vertex3(mRect.mLeft + base.getParent().mRect.mLeft, mRect.mBottom, 0.0d);
+            GL.End();
+
+            // no children to draw
+            if (base.getChildren() == null)
+                return;
+
+            foreach (LayoutBase child in base.getChildren())
+                child.draw();
+
+            GL.PopMatrix();
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
         }
 
         public override void addUserData(UserdataBase data)

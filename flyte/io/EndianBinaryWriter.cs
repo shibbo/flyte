@@ -24,7 +24,8 @@ namespace flyte.io
 
         public EndianBinaryWriter(Stream s, Encoding e) : base(s, e) { }
 
-        public long Pos() { return this.BaseStream.Position; }
+        public long Pos() { return BaseStream.Position; }
+        public void Seek(long where) { BaseStream.Position = where; }
 
         public void SetEndianess(Endianess endianess) { mEndianess = endianess; }
 
@@ -34,7 +35,7 @@ namespace flyte.io
         {
             ushort val = (ushort)value;
 
-            if (mEndianess == Endianess.Little)
+            if (mEndianess == Endianess.Big)
                 base.Write((short)((val >> 8) | (val << 8)));
             else
                 base.Write(value);
@@ -44,7 +45,7 @@ namespace flyte.io
         {
             uint val = (uint)value;
 
-            if (mEndianess == Endianess.Little)
+            if (mEndianess == Endianess.Big)
                 base.Write((int)((val >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | (val << 24)));
             else
                 base.Write(value);
@@ -52,7 +53,7 @@ namespace flyte.io
 
         public override void Write(ushort value)
         {
-            if (mEndianess == Endianess.Little)
+            if (mEndianess == Endianess.Big)
                 base.Write((ushort)((value >> 8) | (value << 8)));
             else
                 base.Write(value);
@@ -60,7 +61,7 @@ namespace flyte.io
 
         public override void Write(uint value)
         {
-            if (mEndianess == Endianess.Little)
+            if (mEndianess == Endianess.Big)
                 base.Write((uint)((value >> 24) | ((value & 0xFF0000) >> 8) | ((value & 0xFF00) << 8) | (value << 24)));
             else
                 base.Write(value);
@@ -68,10 +69,35 @@ namespace flyte.io
 
         public override void Write(byte[] bytes)
         {
-            if (mEndianess == Endianess.Little)
+            if (mEndianess == Endianess.Big)
                 Array.Reverse(bytes);
 
             base.Write(bytes);
+        }
+
+        public void WritePad(uint amount)
+        {
+            for (int i = 0; i < amount; i++)
+                base.Write((byte)0);
+        }
+
+        public void WritePad(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+                base.Write((byte)0);
+        }
+
+        public void WriteAligned(int mult)
+        {
+            long remainder = (Pos() % mult);
+
+            if (remainder != 0)
+            {
+                int numBytes = mult - (int)remainder;
+
+                for (int i = 0; i < numBytes; i++)
+                    WritePad(numBytes);
+            }
         }
 
         public override void Write(float value)
@@ -104,6 +130,14 @@ namespace flyte.io
             base.Write(color.g);
             base.Write(color.b);
             base.Write(color.a);
+        }
+
+        public void WriteInt32At(long pos, int val)
+        {
+            long curPos = Pos();
+            Seek(pos);
+            base.Write(val);
+            Seek(curPos);
         }
 
         Endianess mEndianess;
