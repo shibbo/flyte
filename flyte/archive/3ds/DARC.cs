@@ -65,8 +65,6 @@ namespace flyte.archive._3ds
                 {
                     entry.setName(curDirectory + "/" + reader.ReadUTF16StringFrom(entry.getFileNameOffset() + tablePos));
                     entry.setData(reader.ReadBytesFrom(entry.getFileDataOffset(), (int)entry.getFileDataLength()));
-
-                    File.WriteAllBytes(entry.getName(), entry.getData());
                 }
                 else
                 {
