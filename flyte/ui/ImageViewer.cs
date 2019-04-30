@@ -7,9 +7,10 @@ namespace flyte.ui
 {
     public partial class ImageViewer : Form
     {
-        public ImageViewer()
+        public ImageViewer(string filename)
         {
             InitializeComponent();
+            this.Text += " (" + filename + ")";
         }
 
         public void setImage(ImageBase image)

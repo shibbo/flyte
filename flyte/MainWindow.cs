@@ -510,7 +510,7 @@ namespace flyte
             if (container == null)
                 return;
 
-            ImageViewer viewer = new ImageViewer();
+            ImageViewer viewer = new ImageViewer(texturesList.GetItemText(texturesList.SelectedItem));
 
             viewer.setImage(container.getImage(0));
             viewer.Show();
